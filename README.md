@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sabre Logs
 
-## Getting Started
+Plataforma de relacionamento com o cliente da Sabre: conta própria, timeline de progresso do agente de IA contratado, gamificação de upsell e painel financeiro para o operador.
 
-First, run the development server:
+A especificação completa do produto vive em [`docs/`](./docs/README.md) — leia `docs/README.md` antes de tocar em qualquer parte do código. `docs/_mvp/` é histórico da primeira versão (link ofuscado) e não deve ser usado como referência.
+
+## Stack
+
+Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · Supabase (Postgres, Auth, Realtime) · Resend · Asaas. Detalhes em [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
+
+## Antes de codar
+
+Este projeto está pinado numa versão do Next.js com mudanças de API em relação a versões anteriores. Leia `AGENTS.md` e os guias relevantes em `node_modules/next/dist/docs/` antes de escrever código.
+
+## Desenvolvimento
 
 ```bash
+npm install
+cp .env.example .env.local   # preencher com as chaves reais do Supabase
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Segredos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.example` contém apenas placeholders. Segredos reais só em `.env.local` (fora do controle de versão) ou nas variáveis de ambiente da Vercel — nunca commitados. Ver [`docs/SECURITY.md`](./docs/SECURITY.md).
 
-## Learn More
+## Roteiro
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O desenvolvimento segue as fases descritas em [`docs/ROADMAP.md`](./docs/ROADMAP.md), da fundação (F0) ao endurecimento pré-produção (F9).

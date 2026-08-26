@@ -1,16 +1,13 @@
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 text-center text-zinc-100">
-      <div>
-        <p className="text-xs font-medium uppercase tracking-widest text-emerald-400">
-          Sabre
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold">Logs</h1>
-        <p className="mt-2 max-w-sm text-sm text-zinc-500">
-          Acesse o link enviado pela Sabre para acompanhar o progresso do seu
-          projeto.
-        </p>
-      </div>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-2 px-4 text-center">
+      <p className="text-label uppercase tracking-wide text-text-tertiary">
+        Sabre
+      </p>
+      <h1 className="font-display text-display-md text-text-primary">Logs</h1>
+      <p className="max-w-sm text-body text-text-secondary">
+        Em construção. A home institucional chega na fase F7.
+      </p>
     </div>
   );
 }
