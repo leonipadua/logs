@@ -2,6 +2,15 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { formatCentavosBRL, formatDataPtBR } from "@/lib/format";
+import {
+  janelaDoMes,
+  limiteInadimplenciaISODate,
+  diasEmAtraso,
+  calcularMrr,
+  calcularReceitaRealizada,
+  calcularReceitaPrevista,
+  calcularLtv,
+} from "@/lib/domain/finance";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHead, TableHeaderCell, TableBody, TableRow, TableCell } from "@/components/ui/table";
@@ -9,24 +18,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 
 export const dynamic = "force-dynamic";
 
-function inicioFimDoMes(base = new Date()) {
-  const inicio = new Date(base.getFullYear(), base.getMonth(), 1);
-  const fim = new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59);
-  return { inicio, fim };
-}
-
-function limiteInadimplencia(): string {
-  return new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10);
-}
-
-function diasEmAtraso(vencimento: string): number {
-  return Math.floor((Date.now() - new Date(vencimento).getTime()) / 86400000);
-}
-
 export default async function FinanceiroPage() {
   await requireAdmin();
   const supabase = await createClient();
-  const { inicio, fim } = inicioFimDoMes();
+  const { inicio, fim } = janelaDoMes();
 
   const [{ data: pagasNoMes }, { data: pendentesNoMes }, { data: assinaturasAtivas }, { data: proximasCobrancas }, { data: inadimplentes }, { data: organizacoes }] =
     await Promise.all([
@@ -53,14 +48,14 @@ export default async function FinanceiroPage() {
         .from("charges")
         .select("id, vencimento, valor_centavos, organizations(nome)")
         .eq("status", "vencida")
-        .lte("vencimento", limiteInadimplencia())
+        .lte("vencimento", limiteInadimplenciaISODate())
         .order("vencimento", { ascending: true }),
       supabase.from("organizations").select("id, nome, subscriptions(valor_centavos), charges(valor_centavos, status)"),
     ]);
 
-  const receitaRealizada = (pagasNoMes ?? []).reduce((acc, c) => acc + c.valor_centavos, 0);
-  const receitaPrevista = receitaRealizada + (pendentesNoMes ?? []).reduce((acc, c) => acc + c.valor_centavos, 0);
-  const mrr = (assinaturasAtivas ?? []).reduce((acc, s) => acc + s.valor_centavos, 0);
+  const receitaRealizada = calcularReceitaRealizada(pagasNoMes ?? []);
+  const receitaPrevista = calcularReceitaPrevista(receitaRealizada, pendentesNoMes ?? []);
+  const mrr = calcularMrr(assinaturasAtivas ?? []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -103,9 +98,7 @@ export default async function FinanceiroPage() {
           <TableBody>
             {(organizacoes ?? []).map((org) => {
               const assinatura = Array.isArray(org.subscriptions) ? org.subscriptions[0] : org.subscriptions;
-              const ltv = (org.charges ?? [])
-                .filter((c: { status: string }) => c.status === "paga")
-                .reduce((acc: number, c: { valor_centavos: number }) => acc + c.valor_centavos, 0);
+              const ltv = calcularLtv(org.charges ?? []);
               return (
                 <TableRow key={org.id}>
                   <TableCell>

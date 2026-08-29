@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { enviarEmailComLog } from "@/lib/email/send-and-log";
 import { templateDigestTasks } from "@/lib/email/templates";
+import { agruparTaskIdsPorProjeto, destinatariosDoDigest } from "@/lib/domain/digest";
 
 export const dynamic = "force-dynamic";
 
@@ -35,14 +36,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, projetosNotificados: 0 });
   }
 
-  const tasksPorProjeto = new Map<string, string[]>();
-  for (const t of tasks) {
-    const fase = Array.isArray(t.phases) ? t.phases[0] : t.phases;
-    if (!fase) continue;
-    const lista = tasksPorProjeto.get(fase.project_id) ?? [];
-    lista.push(t.id);
-    tasksPorProjeto.set(fase.project_id, lista);
-  }
+  const tasksPorProjeto = agruparTaskIdsPorProjeto(tasks);
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   let projetosNotificados = 0;
@@ -61,10 +55,7 @@ export async function GET(request: Request) {
       .eq("organization_id", projeto.organization_id)
       .is("revogado_em", null);
 
-    const destinatarios = (membros ?? [])
-      .map((m) => (Array.isArray(m.profiles) ? m.profiles[0] : m.profiles))
-      .filter((p): p is { email: string; notificar_task_concluida: boolean } => !!p?.notificar_task_concluida)
-      .map((p) => p.email);
+    const destinatarios = destinatariosDoDigest(membros ?? []);
 
     if (destinatarios.length > 0) {
       const { assunto, html, texto } = templateDigestTasks({

@@ -6,6 +6,7 @@ import { registrarAuditoria } from "@/lib/auth/audit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { materializarOferta } from "@/lib/domain/offers";
 import { emailsDosOwners } from "@/lib/domain/notifications";
+import { podeTransicionar, type EstadoOferta } from "@/lib/domain/offer-state";
 import { paymentProvider } from "@/lib/payments";
 import { enviarEmailComLog } from "@/lib/email/send-and-log";
 import { templateCobrancaGerada } from "@/lib/email/templates";
@@ -227,7 +228,7 @@ export async function iniciarDesbloqueioAction(
     .maybeSingle();
   if (!vinculo) return { message: "Você não tem acesso a esta oferta." };
 
-  if (oferta.status !== "disponivel") {
+  if (!podeTransicionar(oferta.status as EstadoOferta, "em_negociacao")) {
     return { message: "Esta oferta não está mais disponível para desbloqueio." };
   }
 
