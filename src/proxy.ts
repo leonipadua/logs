@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import type { Database } from "@/lib/supabase/types";
 
-/**
- * F0: apenas cabeçalhos de segurança e CSP com nonce.
- * F1 adiciona a validação real de sessão (Supabase Auth) e o redirecionamento
- * por must_change_password sobre esta mesma função.
- */
-export function proxy(request: NextRequest) {
+function buildCsp(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
-
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const supabaseWs = supabaseUrl.replace(/^https:/, "wss:");
 
@@ -31,15 +27,74 @@ export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", cspHeader);
+  return { requestHeaders, cspHeader };
+}
 
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const { requestHeaders, cspHeader } = buildCsp(request);
+
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
+          response = NextResponse.next({ request: { headers: requestHeaders } });
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options);
+          }
+        },
+      },
+    },
+  );
+
+  // getUser() revalida contra o servidor — não apenas a presença do cookie.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isTrocarSenha = pathname === "/trocar-senha";
+  const isProtegida = pathname.startsWith("/app") || pathname.startsWith("/admin");
+
+  if (!user && (isProtegida || isTrocarSenha)) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("next", pathname);
+    response = NextResponse.redirect(loginUrl);
+  } else if (user) {
+    let mustChangePassword = false;
+    if (isProtegida || isTrocarSenha || pathname === "/login") {
+      const { data: perfil } = await supabase
+        .from("profiles")
+        .select("must_change_password")
+        .eq("id", user.id)
+        .single();
+      mustChangePassword = perfil?.must_change_password ?? false;
+    }
+
+    if (isProtegida && mustChangePassword) {
+      response = NextResponse.redirect(new URL("/trocar-senha", request.url));
+    } else if (isProtegida && pathname.startsWith("/admin") && user.app_metadata?.role !== "admin") {
+      response = NextResponse.redirect(new URL("/app", request.url));
+    } else if (isTrocarSenha && !mustChangePassword) {
+      response = NextResponse.redirect(new URL("/app", request.url));
+    } else if (pathname === "/login" && !mustChangePassword) {
+      response = NextResponse.redirect(new URL("/app", request.url));
+    } else if (pathname === "/login" && mustChangePassword) {
+      response = NextResponse.redirect(new URL("/trocar-senha", request.url));
+    }
+  }
+
   response.headers.set("Content-Security-Policy", cspHeader);
-
-  if (
-    request.nextUrl.pathname.startsWith("/app") ||
-    request.nextUrl.pathname.startsWith("/admin") ||
-    request.nextUrl.pathname.startsWith("/api")
-  ) {
+  if (isProtegida || pathname.startsWith("/api")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
