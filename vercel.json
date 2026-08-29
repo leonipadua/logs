@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/verificar-vencidas",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/digest-tasks",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
