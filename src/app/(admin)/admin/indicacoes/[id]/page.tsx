@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ConfirmDeleteButton } from "@/components/ui/confirm-delete-button";
 import { excluirLinkAction } from "@/lib/actions/indicacao-actions";
 import { ofertaProntaParaVitrine } from "@/lib/domain/indicacoes";
+import { getBaseUrl } from "@/lib/utils/base-url";
 import { AlternarLinkForm } from "../indicacao-forms";
 import { CopiarLinkButton } from "../copiar-link-button";
 import { AlternarOfertaForm, OrdemForm } from "./vitrine-forms";
@@ -37,7 +38,7 @@ export default async function VitrineAdminPage({ params }: PageProps<"/admin/ind
   const curadoria = new Map(
     (link.referral_link_offers ?? []).map((linha) => [linha.offer_id, linha]),
   );
-  const url = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/indique/${link.token}`;
+  const url = `${await getBaseUrl()}/indique/${link.token}`;
   const totalCliques = (link.referral_link_offers ?? []).reduce((soma, o) => soma + o.cliques, 0);
 
   return (

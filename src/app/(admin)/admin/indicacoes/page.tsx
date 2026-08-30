@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CriarLinkForm } from "./indicacao-forms";
 import { CopiarLinkButton } from "./copiar-link-button";
+import { getBaseUrl } from "@/lib/utils/base-url";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function IndicacoesPage() {
     supabase.from("organizations").select("id, nome").is("arquivada_em", null).order("nome"),
   ]);
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const baseUrl = await getBaseUrl();
 
   return (
     <div className="flex flex-col gap-8">
