@@ -94,7 +94,9 @@ export async function proxy(request: NextRequest) {
   }
 
   response.headers.set("Content-Security-Policy", cspHeader);
-  if (isProtegida || pathname.startsWith("/api")) {
+  // /indique é público de propósito, mas não deve ser indexado: a vitrine é
+  // para quem recebeu o link de um cliente, não para busca orgânica.
+  if (isProtegida || pathname.startsWith("/api") || pathname.startsWith("/indique")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 

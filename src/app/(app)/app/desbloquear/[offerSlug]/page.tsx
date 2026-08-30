@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MessageCircle } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { getOfertaPorSlug } from "@/lib/data/project";
 import { formatCentavosBRL } from "@/lib/format";
+import { WhatsAppLink } from "@/components/ui/whatsapp-link";
 import { ImpressaoTracker, IniciarDesbloqueioForm } from "./desbloqueio-forms";
 
 export const dynamic = "force-dynamic";
@@ -53,15 +53,9 @@ export default async function DesbloquearPage({ params }: PageProps<"/app/desblo
       )}
 
       {whatsapp && (
-        <a
-          href={`https://wa.me/${whatsapp}?text=${mensagem}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-2 text-body-sm text-text-secondary hover:text-text-primary"
-        >
-          <MessageCircle size={16} strokeWidth={1.5} />
+        <WhatsAppLink href={`https://wa.me/${whatsapp}?text=${mensagem}`} variant="discreto">
           Entrar em contato
-        </a>
+        </WhatsAppLink>
       )}
     </div>
   );

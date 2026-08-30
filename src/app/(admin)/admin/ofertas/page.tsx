@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
@@ -30,7 +31,12 @@ export default async function OfertasPage() {
             <Card key={o.id}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-text-primary">{o.titulo}</p>
+                  <Link
+                    href={`/admin/ofertas/${o.id}`}
+                    className="font-medium text-text-primary hover:underline"
+                  >
+                    {o.titulo}
+                  </Link>
                   <p className="text-body-sm text-text-tertiary">/{o.slug}</p>
                 </div>
                 <div className="flex items-center gap-3">

@@ -11,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         "/app",
         "/admin",
         "/api",
+        "/indique",
         "/login",
         "/trocar-senha",
         "/recuperar-senha",

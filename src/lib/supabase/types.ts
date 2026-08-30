@@ -252,11 +252,17 @@ export type Database = {
           ativa: boolean
           created_at: string
           descricao_entrega: string | null
+          descricao_publica: string | null
+          entregaveis: Json
           id: string
           insight_padrao: string
+          para_quem: string | null
           prazo_estimado_dias: number | null
+          prazo_publico: string | null
           preco_padrao_centavos: number
           recorrencia_centavos: number
+          resultado_esperado: string | null
+          resumo_publico: string | null
           slug: string
           template_fases: Json
           titulo: string
@@ -266,11 +272,17 @@ export type Database = {
           ativa?: boolean
           created_at?: string
           descricao_entrega?: string | null
+          descricao_publica?: string | null
+          entregaveis?: Json
           id?: string
           insight_padrao: string
+          para_quem?: string | null
           prazo_estimado_dias?: number | null
+          prazo_publico?: string | null
           preco_padrao_centavos?: number
           recorrencia_centavos?: number
+          resultado_esperado?: string | null
+          resumo_publico?: string | null
           slug: string
           template_fases?: Json
           titulo: string
@@ -280,11 +292,17 @@ export type Database = {
           ativa?: boolean
           created_at?: string
           descricao_entrega?: string | null
+          descricao_publica?: string | null
+          entregaveis?: Json
           id?: string
           insight_padrao?: string
+          para_quem?: string | null
           prazo_estimado_dias?: number | null
+          prazo_publico?: string | null
           preco_padrao_centavos?: number
           recorrencia_centavos?: number
+          resultado_esperado?: string | null
+          resumo_publico?: string | null
           slug?: string
           template_fases?: Json
           titulo?: string
@@ -599,6 +617,95 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_link_offers: {
+        Row: {
+          cliques: number
+          created_at: string
+          id: string
+          offer_id: string
+          ordem: number
+          referral_link_id: string
+          updated_at: string
+          visitas: number
+        }
+        Insert: {
+          cliques?: number
+          created_at?: string
+          id?: string
+          offer_id: string
+          ordem?: number
+          referral_link_id: string
+          updated_at?: string
+          visitas?: number
+        }
+        Update: {
+          cliques?: number
+          created_at?: string
+          id?: string
+          offer_id?: string
+          ordem?: number
+          referral_link_id?: string
+          updated_at?: string
+          visitas?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_link_offers_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_link_offers_referral_link_id_fkey"
+            columns: ["referral_link_id"]
+            isOneToOne: false
+            referencedRelation: "referral_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_links: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          organization_id: string
+          token: string
+          updated_at: string
+          visitas: number
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          organization_id: string
+          token: string
+          updated_at?: string
+          visitas?: number
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          organization_id?: string
+          token?: string
+          updated_at?: string
+          visitas?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_links_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"

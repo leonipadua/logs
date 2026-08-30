@@ -35,6 +35,32 @@ export const criarOfertaSchema = z.object({
     }),
 });
 
+/**
+ * Conteúdo que o lead vê na vitrine de indicação. Nenhum campo é obrigatório
+ * — a oferta pode existir só para uso interno; a página do admin avisa quando
+ * falta o que a vitrine precisa (ver `ofertaProntaParaVitrine`).
+ */
+export const conteudoPublicoSchema = z.object({
+  resumoPublico: z.string().trim().max(200, "Máximo de 200 caracteres.").nullish().or(z.literal("")),
+  descricaoPublica: z.string().trim().nullish().or(z.literal("")),
+  entregaveisTexto: z.string().nullish().or(z.literal("")),
+  paraQuem: z.string().trim().nullish().or(z.literal("")),
+  resultadoEsperado: z.string().trim().nullish().or(z.literal("")),
+  prazoPublico: z.string().trim().max(60).nullish().or(z.literal("")),
+});
+
+export const editarOfertaSchema = z
+  .object({
+    offerId: z.string().uuid(),
+    titulo: z.string().trim().min(2, "Informe o título."),
+    insightPadrao: z.string().trim().min(5, "Escreva a copy de insight."),
+    descricaoEntrega: z.string().trim().nullish().or(z.literal("")),
+    precoPadraoCentavos: z.coerce.number().int().min(0, "Preço não pode ser negativo."),
+    prazoEstimadoDias: z.coerce.number().int().min(0).nullish(),
+    ativa: z.enum(["0", "1"]),
+  })
+  .extend(conteudoPublicoSchema.shape);
+
 export const publicarOfertaSchema = z.object({
   projectId: z.string().uuid(),
   offerId: z.string().uuid(),

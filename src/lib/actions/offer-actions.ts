@@ -11,8 +11,10 @@ import { paymentProvider } from "@/lib/payments";
 import { enviarEmailComLog } from "@/lib/email/send-and-log";
 import { templateCobrancaGerada } from "@/lib/email/templates";
 import { formatCentavosBRL } from "@/lib/format";
+import { parseEntregaveis } from "@/lib/domain/indicacoes";
 import {
   criarOfertaSchema,
+  editarOfertaSchema,
   publicarOfertaSchema,
   removerOfertaSchema,
   desbloquearManualSchema,
@@ -67,6 +69,67 @@ export async function criarOfertaAction(
 
   revalidatePath("/admin/ofertas");
   return { success: true };
+}
+
+/** Edição do catálogo, incluindo o conteúdo que o lead vê na vitrine de indicação. */
+export async function editarOfertaAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const sessao = await requireAdmin();
+
+  const parsed = editarOfertaSchema.safeParse({
+    offerId: formData.get("offerId"),
+    titulo: formData.get("titulo"),
+    insightPadrao: formData.get("insightPadrao"),
+    descricaoEntrega: formData.get("descricaoEntrega"),
+    precoPadraoCentavos: formData.get("precoPadraoCentavos"),
+    prazoEstimadoDias: formData.get("prazoEstimadoDias"),
+    ativa: formData.get("ativa") ?? "0",
+    resumoPublico: formData.get("resumoPublico"),
+    descricaoPublica: formData.get("descricaoPublica"),
+    entregaveisTexto: formData.get("entregaveisTexto"),
+    paraQuem: formData.get("paraQuem"),
+    resultadoEsperado: formData.get("resultadoEsperado"),
+    prazoPublico: formData.get("prazoPublico"),
+  });
+  if (!parsed.success) {
+    const fieldErrors = parsed.error.flatten().fieldErrors as Record<string, string[]>;
+    return { errors: Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, v[0]])) };
+  }
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("offers")
+    .update({
+      titulo: parsed.data.titulo,
+      insight_padrao: parsed.data.insightPadrao,
+      descricao_entrega: parsed.data.descricaoEntrega || null,
+      preco_padrao_centavos: parsed.data.precoPadraoCentavos,
+      prazo_estimado_dias: parsed.data.prazoEstimadoDias ?? null,
+      ativa: parsed.data.ativa === "1",
+      resumo_publico: parsed.data.resumoPublico || null,
+      descricao_publica: parsed.data.descricaoPublica || null,
+      entregaveis: parseEntregaveis(parsed.data.entregaveisTexto ?? ""),
+      para_quem: parsed.data.paraQuem || null,
+      resultado_esperado: parsed.data.resultadoEsperado || null,
+      prazo_publico: parsed.data.prazoPublico || null,
+    })
+    .eq("id", parsed.data.offerId);
+
+  if (error) return { message: "Não foi possível salvar a oferta." };
+
+  await registrarAuditoria({
+    actorId: sessao.userId,
+    acao: "editar_oferta",
+    entidade: "offers",
+    entidadeId: parsed.data.offerId,
+    depois: { titulo: parsed.data.titulo, ativa: parsed.data.ativa === "1" },
+  });
+
+  revalidatePath("/admin/ofertas");
+  revalidatePath(`/admin/ofertas/${parsed.data.offerId}`);
+  return { success: true, message: "Oferta salva." };
 }
 
 export async function publicarOfertaAction(
