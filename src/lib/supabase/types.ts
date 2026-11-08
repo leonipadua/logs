@@ -975,6 +975,59 @@ export type Database = {
         }
         Relationships: []
       }
+      project_meetings: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          duracao_min: number | null
+          gravacao_url: string | null
+          id: string
+          link_reuniao: string | null
+          ocorre_em: string
+          project_id: string
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          duracao_min?: number | null
+          gravacao_url?: string | null
+          id?: string
+          link_reuniao?: string | null
+          ocorre_em: string
+          project_id: string
+          status?: string
+          tipo?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          duracao_min?: number | null
+          gravacao_url?: string | null
+          id?: string
+          link_reuniao?: string | null
+          ocorre_em?: string
+          project_id?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_offers: {
         Row: {
           cliques: number
@@ -1062,6 +1115,7 @@ export type Database = {
           relogio: string
           relogio_dias_pausados: number
           relogio_motivo: string | null
+          relogio_origem: string | null
           relogio_pausado_em: string | null
           semana_atual: number | null
           slug: string
@@ -1083,6 +1137,7 @@ export type Database = {
           relogio?: string
           relogio_dias_pausados?: number
           relogio_motivo?: string | null
+          relogio_origem?: string | null
           relogio_pausado_em?: string | null
           semana_atual?: number | null
           slug: string
@@ -1104,6 +1159,7 @@ export type Database = {
           relogio?: string
           relogio_dias_pausados?: number
           relogio_motivo?: string | null
+          relogio_origem?: string | null
           relogio_pausado_em?: string | null
           semana_atual?: number | null
           slug?: string
