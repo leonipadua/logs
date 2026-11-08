@@ -537,3 +537,31 @@ A ser executado antes de considerar a F1 concluída. Com a chave anônima e um u
 - [ ] `update profiles set must_change_password = false where id = auth.uid()` é rejeitado.
 - [ ] Repetir tudo com um usuário sem nenhum vínculo: todas as consultas retornam zero linhas.
 - [ ] Repetir com a chave anônima **sem autenticação**: todas as consultas retornam zero linhas.
+
+---
+
+## 11. Logs v2 — Fundação (migration `0013_logs_v2_fundacao.sql`)
+
+Mapeamento PRD → tabelas em `docs/DECISOES_V2.md`. Tudo com RLS: `is_admin()` total; cliente só lê a própria conta (`is_org_member`); **nenhuma policy para `anon`** (lead entra por token, só via funções `security definer` chamadas por rota server-side com `service_role`).
+
+| Tabela / mudança | Resumo |
+|---|---|
+| `organizations` (+cols) | `segmento`, `cidade`, `estagio` (prospeccao\|conexao\|diagnostico\|proposta\|fechado\|cliente; existentes viram `cliente`), `saude` (saudavel\|atencao\|risco), `asaas_customer_id` |
+| `contacts`, `calls`, `pains` | CRM. `pains.tipo_spin` (situacao\|problema\|implicacao\|necessidade); **implicação exige `valor_numerico` + `unidade`** (constraint); `custo_mensal_centavos`; `module_id` mapeia dor → módulo. Só admin |
+| `modules` | Catálogo: preço de implementação, mensalidade, horas, `dores_gatilho[]`, `ativo`, `placeholder` |
+| `tiers`, `tier_modules` | 3 tiers por `ordem` 1..3; `alvo` é coluna gerada (`ordem = 2`). Composição em `tier_modules` |
+| `payment_conditions` | Única alavanca de preço (`ajuste_bps` sobre a implementação), definida no catálogo |
+| `proposals`, `proposal_items` | Proposta viva: `token` da URL, `status` rascunho\|enviada\|aceita, `tier_id` (escolhido), `premissas_roi` jsonb, `narrativa` jsonb, `view_count`, `first/last_viewed_at`. **Sem coluna de preço** (guardado por `schema-guard.test.ts`). `proposal_items` = dor → módulo + texto |
+| `contracts` | `proposal_id` (único), `origem` proposta\|legado, vigência, `valor_implementacao_centavos`, `mensalidade_centavos`, `plano_parcelas` jsonb, `escopo_retainer` jsonb. Trigger força o valor = catálogo quando `origem = 'proposta'` |
+| `projects` (+cols) | `contract_id`, `relogio` rodando\|pausado (+`relogio_pausado_em`, `relogio_motivo`, `relogio_dias_pausados`), `semana_atual` (null = legado, fora da capacidade), `data_inicio_prevista`, `data_fim_prevista`, `na_fila`, `start_date` |
+| `phases` (+cols) = sprint | `etapa` S0..S4 (S4 = S4+, repetível), `criterio_pronto`, `status` pendente\|em_andamento\|concluida, `inicio_previsto`, `fim_previsto`, `fechada_em`. Única por (projeto, etapa) exceto S4 |
+| `tasks` (+cols) | `dono` sabre\|cliente, `categoria`, `prazo`, `bloqueada_por_tier_id`, `module_id`, `vencida_registrada_em` (dedupe de `client_task.overdue`) |
+| `change_requests` | `classificacao` retainer\|aditivo; `valor_centavos` derivado por trigger do módulo (aditivo exige `module_id`) |
+| `settings` | chave → jsonb (`capacidade_max_projetos`=2, `horas_semana_disponiveis`, `vigencia_minima_meses`, `proposta_validade_dias`, `prazo_pendencia_cliente_dias`) |
+| `events` | `tipo` (`entidade.acao`), `ator_tipo`/`ator_id`, `organization_id`, `entidade`/`entidade_id`, `payload`, `visivel_cliente`, `ocorrido_em`. Escrita só `service_role` (`logEvent`); admin lê tudo; membro lê só `visivel_cliente` da sua conta |
+
+**Funções:** `calc_tier_preco(tier_id)` e `calc_proposta_preco(proposal_id, tier_id?)` (única fonte do preço); `projetos_em_implementacao()` (capacidade: `em_andamento`, fora da fila, `semana_atual` 0..3); `proposta_por_token(token)` e `registrar_visualizacao_proposta(token)` (`security definer`, execução só `service_role`; devolvem apenas campos próprios do lead).
+
+**Seed provisório:** 8 módulos, 3 tiers (Essencial/Completo/Escala) e 2 condições de pagamento, todos `placeholder = true`, editáveis em `/admin/catalogo`. Admin em `/admin/configuracoes`.
+
+**Limitação conhecida:** `saude`/`estagio` ficam legíveis ao membro da própria organização (policy de `organizations` é por linha); não guardar texto sensível nessas colunas.
