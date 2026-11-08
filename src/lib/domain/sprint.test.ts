@@ -39,7 +39,7 @@ describe("critério de pronto", () => {
     expect(avaliarCriterioPronto("S2", [t("concluida"), t("bloqueada", "sabre", "tier-3")], ctx).ok).toBe(true);
     const aberto = avaliarCriterioPronto("S1", [t("concluida"), t("pendente"), t("pendente", "cliente")], ctx);
     expect(aberto.ok).toBe(false);
-    expect(!aberto.ok && aberto.pendencias.join(" ")).toMatch(/Sabre.*cliente/s);
+    expect(!aberto.ok && aberto.pendencias.join(" ")).toMatch(/Sabre[\s\S]*cliente/);
   });
 
   it("sprint sem entregas não fecha", () => {

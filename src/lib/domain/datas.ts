@@ -30,3 +30,8 @@ export function slugify(texto: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-+|-+$)/g, "");
 }
+
+/** Diferença assinada em dias entre duas datas "YYYY-MM-DD" (ate - de). */
+export function diferencaDias(de: string, ate: string): number {
+  return Math.round((new Date(`${ate}T00:00:00Z`).getTime() - new Date(`${de}T00:00:00Z`).getTime()) / MS_DIA);
+}
