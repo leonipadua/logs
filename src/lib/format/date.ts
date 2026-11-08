@@ -25,3 +25,10 @@ export function formatDataHoraPtBR(data: Date | string): string {
   const dataBase = formatDataPtBR(data);
   return `${dataBase} às ${hora}:${minuto}`;
 }
+
+const DIA_FORMATTER = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short", timeZone: "UTC" });
+
+/** Data de calendário ("YYYY-MM-DD") sem deslocar de dia por fuso, ex.: "12 de nov.". */
+export function formatDiaPtBR(dia: string): string {
+  return DIA_FORMATTER.format(new Date(`${dia.slice(0, 10)}T00:00:00Z`));
+}

@@ -26,7 +26,7 @@ import type { FormState } from "./form-state";
  * (`is_admin()`) é a fronteira. service_role só para auditoria e eventos.
  */
 
-const vazio = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : (v ?? null));
+const vazio = (v: string | null | undefined): string | null => (v && v.trim() !== "" ? v.trim() : null);
 
 export async function criarLeadAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const sessao = await requireAdmin();
@@ -171,7 +171,7 @@ export async function registrarCallAction(_prev: FormState, formData: FormData):
     ator: atorDaSessao(sessao),
     organizationId: d.organizationId,
     entidadeId: data.id,
-    payload: { callId: data.id, tipo: d.tipo, resultado: vazio(d.resultado) as string | null },
+    payload: { callId: data.id, tipo: d.tipo, resultado: vazio(d.resultado) },
   });
   revalidatePath(`/admin/contas/${d.organizationId}/cockpit`);
   return { success: true, message: "Call registrada." };
@@ -270,7 +270,7 @@ export async function capturarDorAction(_prev: FormState, formData: FormData): P
     ator: atorDaSessao(sessao),
     organizationId: d.organizationId,
     entidadeId: data.id,
-    payload: { painId: data.id, tipoSpin: d.tipoSpin, callId: vazio(d.callId) as string | null, moduleId },
+    payload: { painId: data.id, tipoSpin: d.tipoSpin, callId: vazio(d.callId), moduleId },
   });
   revalidatePath(`/admin/contas/${d.organizationId}/cockpit`);
   return {

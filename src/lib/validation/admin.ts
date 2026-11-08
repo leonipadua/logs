@@ -47,8 +47,16 @@ export const editarFaseSchema = z.object({
 
 export const taskStatusEnum = z.enum(["pendente", "em_andamento", "concluida", "bloqueada"]);
 
+const donoTask = z.enum(["sabre", "cliente"]).default("sabre");
+const prazoTask = z.preprocess(
+  (v) => (typeof v === "string" && v.trim() === "" ? null : v),
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida.").nullable().default(null),
+);
+
 export const criarTaskSchema = z.object({
   faseId: z.string().uuid(),
+  dono: donoTask,
+  prazo: prazoTask,
   titulo: z.string().trim().min(2, "Informe o título da etapa."),
   slug: z.string().trim().min(2).regex(slugRegex, slugMsg),
   descricao: z.string().trim().nullish().or(z.literal("")),
@@ -57,6 +65,8 @@ export const criarTaskSchema = z.object({
 
 export const editarTaskSchema = z.object({
   taskId: z.string().uuid(),
+  dono: donoTask,
+  prazo: prazoTask,
   titulo: z.string().trim().min(2, "Informe o título da etapa."),
   descricao: z.string().trim().nullish().or(z.literal("")),
   ordem: z.coerce.number().int(),

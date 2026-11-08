@@ -58,7 +58,7 @@ export default async function PropostaPublicaPage({ params }: PageProps<"/p/[tok
           <h1 className="font-display text-display-lg text-text-primary">{proposta.titulo ?? `Proposta para ${proposta.organizacaoNome}`}</h1>
           {proposta.narrativa.abertura && <p className="text-body-lg text-text-secondary">{proposta.narrativa.abertura}</p>}
           {proposta.validadeAte && !aceita && (
-            <p className="text-body-sm text-text-tertiary tabular-nums">Válida até {formatDataPtBR(proposta.validadeAte)}</p>
+            <p className="text-body-sm text-text-tertiary tabular-nums">Válida até {formatDataPtBR(`${proposta.validadeAte}T12:00:00`)}</p>
           )}
         </header>
 

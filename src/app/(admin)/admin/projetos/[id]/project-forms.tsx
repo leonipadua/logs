@@ -18,6 +18,11 @@ const STATUS_OPCOES = [
   { value: "bloqueada", label: "Bloqueada" },
 ];
 
+const DONO_OPCOES = [
+  { value: "sabre", label: "Sabre" },
+  { value: "cliente", label: "Cliente" },
+];
+
 function SelectField({
   id,
   name,
@@ -135,6 +140,12 @@ export function CriarTaskForm({ faseId, proximaOrdem }: { faseId: string; proxim
       <Field label="Slug" htmlFor={`task-slug-${faseId}`} error={state.errors?.slug} hint="único nesta fase">
         <Input id={`task-slug-${faseId}`} name="slug" required />
       </Field>
+      <Field label="Dono" htmlFor={`task-dono-${faseId}`}>
+        <SelectField id={`task-dono-${faseId}`} name="dono" defaultValue="sabre" options={DONO_OPCOES} />
+      </Field>
+      <Field label="Prazo" htmlFor={`task-prazo-${faseId}`} error={state.errors?.prazo}>
+        <Input id={`task-prazo-${faseId}`} name="prazo" type="date" />
+      </Field>
       <Button type="submit" variant="secondary" disabled={pending}>
         {pending ? "Adicionando…" : "Adicionar etapa"}
       </Button>
@@ -184,6 +195,12 @@ export function EditarTaskModal({ task }: { task: Tables<"tasks"> }) {
             <Input id="t-descricao" name="descricao" defaultValue={task.descricao ?? ""} />
           </Field>
           <div className="grid grid-cols-2 gap-4">
+            <Field label="Dono" htmlFor="t-dono">
+              <SelectField id="t-dono" name="dono" defaultValue={task.dono} options={DONO_OPCOES} />
+            </Field>
+            <Field label="Prazo" htmlFor="t-prazo" error={state.errors?.prazo} hint="pendência do cliente vencida pausa o relógio">
+              <Input id="t-prazo" name="prazo" type="date" defaultValue={task.prazo ?? ""} />
+            </Field>
             <Field label="Ordem" htmlFor="t-ordem" error={state.errors?.ordem}>
               <Input id="t-ordem" name="ordem" type="number" defaultValue={task.ordem} />
             </Field>

@@ -6,6 +6,7 @@ import { emailsDosOwners } from "./notifications";
 import { enviarEmailComLog } from "@/lib/email/send-and-log";
 import { templatePagamentoConfirmado, templateCobrancaFalhouOuVencida } from "@/lib/email/templates";
 import { formatCentavosBRL } from "@/lib/format";
+import { sincronizarProjetosDaConta } from "@/lib/projects/sprints";
 
 const URL_FATURAS = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/app/faturas`;
 
@@ -59,6 +60,11 @@ export async function processarEventoPagamento(
     if (charge.tipo === "desbloqueio" && charge.project_offer_id) {
       await materializarOferta(admin, charge.project_offer_id);
     }
+
+    // "Sem sprint sem pagamento": a 1ª cobrança paga conclui a pendência de S0 (best-effort).
+    await sincronizarProjetosDaConta(admin, charge.organization_id).catch((e) =>
+      console.error("[projects] falha ao sincronizar S0 após pagamento", e),
+    );
 
     const org = Array.isArray(charge.organizations) ? charge.organizations[0] : charge.organizations;
     await notificarOwners(admin, charge.organization_id, "M4b", () =>
