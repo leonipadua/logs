@@ -5,9 +5,11 @@ interface ProgressHeaderProps {
   nomeProjeto: string;
   progresso: Progresso;
   atualizadoEm: string;
+  /** Sobrescreve "X de Y etapas concluídas" (ex.: "entregas do sistema"). */
+  unidade?: string;
 }
 
-export function ProgressHeader({ nomeProjeto, progresso, atualizadoEm }: ProgressHeaderProps) {
+export function ProgressHeader({ nomeProjeto, progresso, atualizadoEm, unidade = "etapas concluídas" }: ProgressHeaderProps) {
   return (
     <header className="flex flex-col gap-3">
       <h1 className="font-display text-display-md text-text-primary">{nomeProjeto}</h1>
@@ -16,7 +18,7 @@ export function ProgressHeader({ nomeProjeto, progresso, atualizadoEm }: Progres
           {formatPercentPtBR(progresso.fracao)}
         </span>
         <span className="text-body-sm tabular-nums text-text-secondary">
-          {progresso.concluidas} de {progresso.total} etapas concluídas
+          {progresso.concluidas} de {progresso.total} {unidade}
         </span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">

@@ -1,14 +1,14 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logEvent } from "@/lib/events";
+import { criarProjetoDoContrato } from "@/lib/projects";
 
 /**
  * GANCHO DO ACEITE. Chamado por aceitarPropostaAction depois que a proposta
  * virou `aceita` e o contrato (origem = 'proposta') foi criado.
  *
- * Hoje só registra `offer.accepted`. A Fase 3 (projeto/portal) estende ESTA
- * função: criar projects (contract_id), o esqueleto S0–S4+, as pendências do
- * cliente e aplicar a fila de capacidade — emitindo `project.started`.
+ * Registra `offer.accepted` e cria o projeto (esqueleto S0–S4+, fila de
+ * capacidade, `project.started`) via criarProjetoDoContrato, que é idempotente.
  *
  * Contrato: idempotente por proposalId, nunca lança (o aceite já foi
  * persistido; falha aqui não pode desfazê-lo).
@@ -38,6 +38,12 @@ export async function aoAceitarProposta(proposalId: string): Promise<void> {
       entidadeId: proposta.id,
       payload: { proposalId: proposta.id, tierId: proposta.tier_id, contractId: contrato?.id ?? null },
     });
+
+    if (contrato?.id) {
+      await criarProjetoDoContrato(contrato.id, { ator: { tipo: "lead" } });
+    } else {
+      console.error("[on-accept] contrato não encontrado para a proposta", proposalId);
+    }
   } catch (e) {
     console.error("[on-accept] falha no gancho do aceite", proposalId, e instanceof Error ? e.message : e);
   }

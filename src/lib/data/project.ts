@@ -79,3 +79,14 @@ export async function getTaskPorSlug(projectSlug: string, taskSlug: string) {
   }
   return null;
 }
+
+/** Reuniões e treinamentos do projeto (RLS: membro lê só os do próprio projeto). */
+export async function getReunioesDoProjeto(projectId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("project_meetings")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("ocorre_em", { ascending: true });
+  return data ?? [];
+}
