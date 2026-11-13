@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Manual Operacional Sabre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --surface-base:#fbfbfa;--surface-raised:#ffffff;--surface-sunken:#f4f4f2;--surface-inverse:#16171a;
+  --text-primary:#16171a;--text-secondary:#5c5f66;--text-tertiary:#8b8e96;--text-inverse:#fbfbfa;
+  --border-subtle:#e8e8e5;--border-default:#d8d8d4;--border-strong:#b8b8b3;
+  --accent:#1f5c4d;--accent-subtle:#e8f0ed;
+  --progress:#9a6b1f;--progress-bg:#f7efdf;--blocked:#a33a2f;--blocked-bg:#f7e8e6;--locked:#4a4d8f;--locked-bg:#ecedf6;
+}
+@page{size:A4;margin:22mm 18mm 20mm 18mm}
+*{box-sizing:border-box}
+html,body{background:var(--surface-base);color:var(--text-primary);margin:0}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:9.5pt;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3,.serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.005em}
+h1{font-size:34pt;line-height:1.08;margin:0 0 10pt}
+h2{font-size:22pt;line-height:1.15;margin:0 0 6pt}
+h3{font-size:14pt;line-height:1.25;margin:12pt 0 4pt}
+h4{font-size:9pt;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin:12pt 0 4pt}
+p{margin:0 0 7pt;max-width:68ch}
+ul,ol{margin:0 0 8pt;padding-left:15pt}
+li{margin:0 0 3pt}
+strong{font-weight:500}
+.section{break-before:page}
+.section.cont{break-before:auto;margin-top:22pt;padding-top:16pt;border-top:1px solid var(--border-default)}
+.kicker{font-size:8.5pt;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6pt}
+.lede{font-size:11pt;color:var(--text-secondary);max-width:62ch;margin-bottom:10pt}
+.muted{color:var(--text-secondary)}
+.small{font-size:8.5pt}
+table{width:100%;border-collapse:collapse;margin:6pt 0 12pt;background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden;font-size:8.8pt;break-inside:auto}
+thead{display:table-header-group}
+tr{break-inside:avoid}
+th{background:var(--surface-sunken);text-align:left;font-weight:500;font-size:8pt;letter-spacing:.03em;color:var(--text-secondary);padding:4.5pt 7pt;border-bottom:1px solid var(--border-subtle)}
+td{padding:4.5pt 7pt;border-bottom:1px solid var(--border-subtle);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;white-space:nowrap}
+.box{background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:8px;padding:10pt 12pt;margin:8pt 0 12pt;break-inside:avoid}
+.box.accent{background:var(--accent-subtle);border-color:#cfe0da}
+.box.warn{background:var(--progress-bg);border-color:#ecdcbc}
+.box.risk{background:var(--blocked-bg);border-color:#ecd0cb}
+.box h4{margin-top:0}
+.tag{display:inline-block;font-size:7pt;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:1pt 4pt;border-radius:4px;vertical-align:1pt;margin-left:3pt}
+.tag.prd{background:var(--accent-subtle);color:var(--accent)}
+.tag.prop{background:var(--progress-bg);color:var(--progress)}
+.tag.aberto{background:var(--locked-bg);color:var(--locked)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10pt}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10pt}
+.stat{background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:8px;padding:9pt 11pt}
+.stat .v{font-family:"Instrument Serif",Georgia,serif;font-size:21pt;line-height:1.1}
+.stat .l{font-size:8pt;color:var(--text-secondary);letter-spacing:.03em}
+.check li{list-style:none;position:relative;padding-left:14pt;margin-left:-15pt}
+.check li::before{content:"";position:absolute;left:0;top:3pt;width:7pt;height:7pt;border:1px solid var(--border-strong);border-radius:2px;background:var(--surface-raised)}
+.day{display:grid;grid-template-columns:62pt 1fr;gap:10pt;border-top:1px solid var(--border-subtle);padding:7pt 0;break-inside:avoid}
+.day .d{font-family:"Instrument Serif",Georgia,serif;font-size:15pt;color:var(--accent);line-height:1.1}
+.day .d span{display:block;font-family:Inter,sans-serif;font-size:7.5pt;color:var(--text-tertiary);letter-spacing:.04em;text-transform:uppercase;margin-top:2pt}
+.day ul{margin:0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:8.5pt}
+.quote{border-left:2px solid var(--accent);padding:4pt 0 4pt 10pt;margin:8pt 0 12pt;color:var(--text-secondary);font-size:9.5pt;break-inside:avoid}
+.cover{height:250mm;display:flex;flex-direction:column;justify-content:space-between}
+.cover .brand{font-size:9pt;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500}
+.cover h1{font-size:50pt;margin-top:40mm}
+.cover .meta{border-top:1px solid var(--border-default);padding-top:10pt;display:grid;grid-template-columns:repeat(3,1fr);gap:10pt;font-size:8.5pt;color:var(--text-secondary)}
+.cover .meta b{display:block;font-weight:500;color:var(--text-primary);font-size:9.5pt;margin-top:2pt}
+.toc{columns:2;column-gap:20pt;font-size:10pt}
+.toc div{break-inside:avoid;display:flex;gap:8pt;padding:4pt 0;border-bottom:1px solid var(--border-subtle)}
+.toc span{color:var(--accent);font-family:"Instrument Serif",Georgia,serif;font-size:12pt;width:18pt}
+.flow{display:flex;flex-wrap:wrap;gap:4pt;margin:8pt 0 12pt}
+.flow div{background:var(--surface-raised);border:1px solid var(--border-subtle);border-radius:4px;padding:4pt 7pt;font-size:8.3pt}
+.flow div.on{background:var(--accent);color:var(--text-inverse);border-color:var(--accent)}
+.flow i{font-style:normal;color:var(--text-tertiary);align-self:center}
+</style>
+</head>
+<body>
+
+<!-- CAPA -->
+<div class="cover">
+  <div>
+    <div class="brand">Sabre · Documento interno</div>
+    <h1>Manual Operacional<br><em>da Sabre</em></h1>
+    <p class="lede">Processos, regras e rotinas padrão: do primeiro contato com o lead à renovação do cliente, a construção dos agentes e a escalada do MRR.</p>
+  </div>
+  <div class="meta">
+    <div>Versão<b>1.0 · 13 nov 2026</b></div>
+    <div>Dono do processo<b>Leoni</b></div>
+    <div>Fontes<b>PRD Logs · Modelo de Escala</b></div>
+  </div>
+</div>
+
+<!-- COMO USAR + ÍNDICE -->
+<div class="section">
+  <div class="kicker">Antes de tudo</div>
+  <h2>Como usar este manual</h2>
+  <p class="lede">Este documento é o padrão. Se uma situação não está aqui, a decisão vira uma regra nova e entra na próxima versão. Escopo combinado de boca não existe, e processo de cabeça também não.</p>
+  <div class="grid3">
+    <div class="box"><h4>Fechei um cliente agora</h4><p class="small">Vá direto para a <strong>seção 5, Checklist pós-fechamento D0 a D+30</strong>. Ali tem dia a dia o que fazer.</p></div>
+    <div class="box"><h4>Vou entrar numa call</h4><p class="small">Seção 4: roteiro do diagnóstico (SPIN + BANT) e da reunião de vendas.</p></div>
+    <div class="box"><h4>Vou construir um agente</h4><p class="small">Seção 8: ciclo de construção, testes e go-live de agentes.</p></div>
+  </div>
+  <h4>Legenda das marcações</h4>
+  <p class="small"><span class="tag prd">PRD</span> regra definida no PRD do Logs (decidida). <span class="tag prop">Proposto</span> padrão novo sugerido neste manual: validar na prática e ajustar. <span class="tag aberto">Em aberto</span> decisão pendente com Leoni.</p>
+
+  <h3>Índice</h3>
+  <div class="toc">
+    <div><span>1</span>Princípios e regras invioláveis</div>
+    <div><span>2</span>O ciclo de vida da conta</div>
+    <div><span>3</span>Oferta, catálogo e precificação</div>
+    <div><span>4</span>Processo comercial</div>
+    <div><span>5</span>Checklist pós-fechamento D0 a D+30</div>
+    <div><span>6</span>Padrão de entrega S0 a S4+</div>
+    <div><span>7</span>Primeiro resultado na primeira semana</div>
+    <div><span>8</span>Construção de agentes</div>
+    <div><span>9</span>Cadência de reuniões e comunicação</div>
+    <div><span>10</span>Pendências, relógio e mudanças de escopo</div>
+    <div><span>11</span>Pós-entrega, expansão e indicação</div>
+    <div><span>12</span>Financeiro e cobrança</div>
+    <div><span>13</span>Estratégia de crescimento do MRR</div>
+    <div><span>14</span>Metas, funil reverso e capacidade</div>
+    <div><span>15</span>Rotina semanal da Sabre</div>
+    <div><span>16</span>Riscos, cancelamento e offboarding</div>
+    <div><span>17</span>Modelos de mensagem</div>
+    <div><span>18</span>Decisões em aberto</div>
+  </div>
+</div>
+
+<!-- 1 PRINCÍPIOS -->
+<div class="section">
+  <div class="kicker">Seção 1</div>
+  <h2>Princípios e regras invioláveis</h2>
+  <p class="lede">Os princípios orientam decisões novas. As regras invioláveis valem sempre, inclusive com cliente antigo, amigo ou indicação.</p>
+  <h3>Cinco princípios <span class="tag prd">PRD</span></h3>
+  <ol>
+    <li><strong>Um registro, várias telas.</strong> Toda ação relevante vira um evento no Logs. Vendas, portal, metas e financeiro leem o mesmo registro. Se não está no Logs, não aconteceu.</li>
+    <li><strong>Encantar pela tecnologia.</strong> O lead precisa ver a própria dor virar sistema na frente dele. A experiência é a prova de competência.</li>
+    <li><strong>Preço por regra, narrativa por IA.</strong> A IA personaliza o texto e nunca define preço, escopo ou desconto.</li>
+    <li><strong>Recompensa é mais Sabre, nunca Sabre mais barata.</strong> Prêmio é acesso e status, não moeda, crédito ou desconto.</li>
+    <li><strong>Usar antes de completar.</strong> Cada módulo, interno ou do cliente, entra em uso real assim que existe no mínimo.</li>
+  </ol>
+  <h3>Dez regras invioláveis <span class="tag prd">PRD</span></h3>
+  <table>
+    <thead><tr><th style="width:4%">#</th><th style="width:34%">Regra</th><th>Na prática</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Preço só vem do catálogo</td><td>Não existe preço negociado na call. Mudou o preço, muda o catálogo, e vale para todos os próximos.</td></tr>
+      <tr><td>2</td><td>IA não decide dinheiro</td><td>Texto da proposta pode ser gerado; preço, escopo, tier e condição nunca.</td></tr>
+      <tr><td>3</td><td>Desconto não existe como recompensa</td><td>A única alavanca de preço é condição de pagamento definida no catálogo (à vista, anual antecipado).</td></tr>
+      <tr><td>4</td><td>ROI sempre com premissas</td><td>Todo número projetado vem com "considerando N leads/mês e ticket R$ X".</td></tr>
+      <tr><td>5</td><td>Escopo verbal não existe</td><td>Combinou algo no WhatsApp? Vira item da proposta aceita ou pedido de mudança registrado no mesmo dia.</td></tr>
+      <tr><td>6</td><td>Relógio pausado é automático</td><td>Pendência do cliente vencida congela o prazo. Leoni não precisa cobrar para o prazo ficar justo.</td></tr>
+      <tr><td>7</td><td>Sem sprint sem pagamento</td><td>S1 só começa com a primeira cobrança paga. Nenhuma linha de código antes.</td></tr>
+      <tr><td>8</td><td>Capacidade é limite duro</td><td>No máximo 2 projetos em S0–S3. O terceiro aceite entra na fila com data de início escrita.</td></tr>
+      <tr><td>9</td><td>Cliente só vê a própria conta</td><td>Isolamento no banco. Nunca mostrar print, dado ou caso de outro cliente sem autorização.</td></tr>
+      <tr><td>10</td><td>Dado financeiro tem conferência humana</td><td>Nenhuma baixa de pagamento baseada em leitura de IA ou comprovante não conferido.</td></tr>
+    </tbody>
+  </table>
+  <div class="box accent"><h4>Regras operacionais complementares <span class="tag prop">Proposto</span></h4>
+  <ul class="small">
+    <li><strong>Mesmo dia.</strong> Call, decisão, pagamento e pedido de mudança são registrados no Logs no mesmo dia em que acontecem.</li>
+    <li><strong>Uma voz por canal.</strong> Combinados formais por e-mail ou portal; WhatsApp é para dúvida rápida e consultoria. O que for decidido no WhatsApp é registrado no Logs.</li>
+    <li><strong>Nunca prometer data sem capacidade.</strong> Antes de dizer "começamos segunda", conferir a tela de capacidade.</li>
+    <li><strong>Sem acesso pessoal.</strong> Todas as credenciais do cliente ficam em cofre de senhas, por cliente, nunca em conversa ou planilha.</li>
+  </ul></div>
+</div>
+
+<!-- 2 CICLO -->
+<div class="section cont">
+  <div class="kicker">Seção 2</div>
+  <h2>O ciclo de vida da conta</h2>
+  <p class="lede">A venda termina no contrato, mas a conta não. A mesma URL que mostra a proposta vira o portal do cliente, e as projeções da proposta viram as metas do projeto.</p>
+  <div class="flow">
+    <div>1 · Prospecção</div><i>→</i><div>2 · Conexão</div><i>→</i><div>3 · Diagnóstico</div><i>→</i><div>4 · Proposta viva</div><i>→</i><div class="on">5 · Fechamento</div><i>→</i>
+    <div>6 · S0 Pré-kickoff</div><i>→</i><div>7 · S1–S3 Implementação</div><i>→</i><div>8 · S4+ Otimização</div><i>→</i><div>9 · Upgrade</div><i>→</i><div>10 · Indicação · renovação</div>
+  </div>
+  <table>
+    <thead><tr><th>Etapa</th><th>Dono</th><th>Entrada</th><th>Saída (critério para avançar)</th><th>Evento no Logs</th></tr></thead>
+    <tbody>
+      <tr><td>Prospecção</td><td>Leoni</td><td>Lista de leads do ICP</td><td>Lead respondeu</td><td class="mono">—</td></tr>
+      <tr><td>Conexão</td><td>Leoni</td><td>Lead respondeu</td><td>Call de diagnóstico agendada</td><td class="mono">call.logged</td></tr>
+      <tr><td>Diagnóstico</td><td>Leoni</td><td>Call agendada</td><td>Dores SPIN com número na Implicação + BANT aprovado</td><td class="mono">pain.captured</td></tr>
+      <tr><td>Proposta</td><td>Leoni + Logs</td><td>Diagnóstico aprovado</td><td>Reunião de vendas feita e link enviado</td><td class="mono">offer.sent · offer.viewed</td></tr>
+      <tr><td>Fechamento</td><td>Lead</td><td>Proposta aberta</td><td>Tier aceito na página e contrato gerado</td><td class="mono">offer.accepted</td></tr>
+      <tr><td>S0</td><td>Sabre + cliente</td><td>Contrato</td><td>1ª cobrança paga e kickoff marcado</td><td class="mono">charge.paid · project.started</td></tr>
+      <tr><td>S1–S3</td><td>Sabre</td><td>Pagamento</td><td>Escopo 100% e aceite formal</td><td class="mono">sprint.closed</td></tr>
+      <tr><td>S4+</td><td>Sabre</td><td>Aceite</td><td>Relatório do ciclo publicado</td><td class="mono">sprint.closed</td></tr>
+      <tr><td>Upgrade</td><td>Cliente</td><td>Task bloqueada vista</td><td>Novo tier contratado</td><td class="mono">upgrade.done</td></tr>
+      <tr><td>Indicação</td><td>Cliente</td><td>Resultado visível</td><td>Indicado fecha contrato</td><td class="mono">referral.created · referral.won</td></tr>
+    </tbody>
+  </table>
+  <h3>Quem é o cliente ideal (ICP) <span class="tag aberto">Em aberto</span></h3>
+  <p>Registrar aqui, e no filtro de prospecção, o perfil que mais converte e mais rápido mostra resultado. Sugestão de critérios a validar com os dados das primeiras contas:</p>
+  <ul>
+    <li>Negócio que <strong>já recebe demanda</strong> (leads por WhatsApp, Instagram, site) e perde parte por demora ou falta de follow-up.</li>
+    <li>Decisor acessível na call de diagnóstico (dono ou sócio).</li>
+    <li>Ticket médio do cliente final que torna o custo da dor visível em R$/mês.</li>
+    <li>Ferramentas mínimas já em uso (Google Calendar, WhatsApp Business, alguma planilha ou CRM).</li>
+  </ul>
+</div>
+
+<!-- 3 OFERTA -->
+<div class="section">
+  <div class="kicker">Seção 3</div>
+  <h2>Oferta, catálogo e precificação</h2>
+  <p class="lede">A Sabre vende módulos de um catálogo fixo, organizados em três tiers. A dor do cliente escolhe o módulo; o catálogo dá o preço.</p>
+  <h3>Estrutura da oferta <span class="tag prd">PRD</span></h3>
+  <table>
+    <thead><tr><th>Peça</th><th>Como funciona</th></tr></thead>
+    <tbody>
+      <tr><td>Módulo</td><td>Unidade do catálogo (Sabre OS Playbook): nome, descrição, preço de implementação, mensalidade, horas estimadas e dores que resolve.</td></tr>
+      <tr><td>Tiers</td><td>Três pacotes de módulos com ancoragem. O do meio é o alvo. O tier cheio mostra o que fica bloqueado nos outros.</td></tr>
+      <tr><td>Implementação</td><td>Valor de entrada que cobre S0–S3.</td></tr>
+      <tr><td>Mensalidade (retainer)</td><td>Cobre S4+: otimização, monitoramento, consultoria por WhatsApp e o escopo fechado listado na proposta.</td></tr>
+      <tr><td>Condição de pagamento</td><td>Única alavanca de preço: à vista, anual antecipado, parcelado. Definida no catálogo.</td></tr>
+      <tr><td>Vigência mínima</td><td>Referência da Plena: 6 meses. Padrão do catálogo <span class="tag aberto">Em aberto</span>.</td></tr>
+    </tbody>
+  </table>
+  <h3>Regras de precificação</h3>
+  <ul>
+    <li>Mudança de preço só pelo catálogo e com data de vigência. Propostas já enviadas mantêm o preço até a validade.</li>
+    <li>O custo de API e infraestrutura por cliente entra no cálculo da mensalidade. Mensalidade abaixo do custo variável + 1h/mês de Leoni não pode existir. <span class="tag prop">Proposto</span></li>
+    <li>Escopo maior que o tier vira outro tier ou aditivo, nunca "a gente encaixa". (Caso Plena: v2 pelo mesmo valor é o que esta regra impede.)</li>
+    <li>Revisão de preço do catálogo a cada trimestre, olhando margem por cliente e taxa de fechamento. Fechando acima de 60% das propostas, o preço está baixo. <span class="tag prop">Proposto</span></li>
+  </ul>
+  <h3>O que entra no retainer de S4+ <span class="tag aberto">Em aberto</span></h3>
+  <p>Até a decisão final, usar este padrão provisório e escrevê-lo na proposta:</p>
+  <div class="grid2">
+    <div class="box accent"><h4>Incluído</h4><ul class="small">
+      <li>Monitoramento dos agentes e correção de falhas</li>
+      <li>Ajustes de prompt, base de conhecimento e fluxos existentes</li>
+      <li>Ciclo de otimização semanal ou quinzenal com relatório</li>
+      <li>Consultoria por WhatsApp no horário definido</li>
+      <li>Custos de API dentro da franquia do tier</li>
+    </ul></div>
+    <div class="box warn"><h4>Não incluído (pedido de mudança)</h4><ul class="small">
+      <li>Novo agente, novo canal ou nova integração</li>
+      <li>Novo módulo do catálogo</li>
+      <li>Mudança de CRM ou de ferramenta do cliente</li>
+      <li>Relatórios ou painéis novos</li>
+      <li>Uso de API acima da franquia</li>
+    </ul></div>
+  </div>
+</div>
+
+<!-- 4 COMERCIAL -->
+<div class="section">
+  <div class="kicker">Seção 4</div>
+  <h2>Processo comercial</h2>
+  <p class="lede">Duas calls, papéis distintos: o diagnóstico captura, a reunião de vendas revela a página pronta. Entre elas, o Logs monta a proposta.</p>
+
+  <h3>4.1 Prospecção e conexão</h3>
+  <ul>
+    <li>Meta diária vem do funil reverso (seção 14), não de vontade. Registrar cada contato no pipeline.</li>
+    <li>Mensagem de abertura personalizada com algo específico do negócio do lead; nunca texto genérico em massa.</li>
+    <li>Objetivo da conexão: uma call de diagnóstico de 30–45 min com o decisor. Não vender na conexão.</li>
+    <li>Follow-up de conexão: D+2, D+5, D+10. Sem resposta após o terceiro, lead volta para nutrição em 60 dias. <span class="tag prop">Proposto</span></li>
+  </ul>
+
+  <h3>4.2 Call de diagnóstico (30–45 min)</h3>
+  <table>
+    <thead><tr><th style="width:16%">Bloco</th><th style="width:10%" class="num">Tempo</th><th>O que fazer</th></tr></thead>
+    <tbody>
+      <tr><td>Abertura</td><td class="num">3 min</td><td>Agenda da call, combinar que ao final ficará claro se faz sentido seguir.</td></tr>
+      <tr><td>Situação</td><td class="num">8 min</td><td>Como o lead chega, quem atende, que ferramentas usa, volume mensal.</td></tr>
+      <tr><td>Problema</td><td class="num">8 min</td><td>Onde o processo quebra: demora de resposta, follow-up esquecido, agenda desorganizada.</td></tr>
+      <tr><td>Implicação</td><td class="num">10 min</td><td><strong>Número obrigatório:</strong> leads perdidos/mês, ticket médio, horas gastas. Sem número, a dor não vira custo.</td></tr>
+      <tr><td>Necessidade</td><td class="num">6 min</td><td>O próprio lead diz o que mudaria se o problema sumisse.</td></tr>
+      <tr><td>BANT</td><td class="num">5 min</td><td>Budget, Authority, Need, Timing. Marcar lado a lado no cockpit.</td></tr>
+      <tr><td>Fechamento</td><td class="num">3 min</td><td>Agendar a reunião de vendas em até 3 dias úteis, com o decisor presente.</td></tr>
+    </tbody>
+  </table>
+  <div class="box"><h4>Critério para gerar proposta</h4>
+  <p class="small">Pelo menos uma dor com Implicação numérica, decisor identificado, BANT sem reprovação em Budget ou Authority e timing de até 60 dias. Caso contrário, o lead sai do funil ou vai para nutrição, e isso também é registrado.</p></div>
+
+  <h3>4.3 Reunião de vendas (30 min)</h3>
+  <ol>
+    <li><strong>Recapitular as dores</strong> com as palavras do lead e o custo em R$/mês calculado.</li>
+    <li><strong>Revelar a proposta viva</strong> compartilhando a tela: cada dor ligada a um módulo.</li>
+    <li><strong>Apresentar os três tiers</strong> do mais completo para o alvo. Mostrar o que fica bloqueado.</li>
+    <li><strong>ROI com premissas</strong>, sempre lidas em voz alta.</li>
+    <li><strong>Próximo passo explícito:</strong> aceite na própria página, prazo de validade da proposta e data de início conforme capacidade.</li>
+  </ol>
+  <h3>4.4 Follow-up guiado por <span class="mono">offer.viewed</span></h3>
+  <table>
+    <thead><tr><th>Sinal no Logs</th><th>Ação</th></tr></thead>
+    <tbody>
+      <tr><td>Abriu 3+ vezes em 48h</td><td>Mensagem no mesmo dia: "Ficou alguma dúvida sobre o tier X?"</td></tr>
+      <tr><td>Abriu 1 vez e parou</td><td>D+2: mensagem curta com um ponto do ROI. D+5: oferecer call de 15 min.</td></tr>
+      <tr><td>Nunca abriu</td><td>D+1: reenviar o link com contexto. D+4: ligar.</td></tr>
+      <tr><td>Proposta perto de vencer</td><td>D-2 da validade: avisar data e próxima vaga de início pela capacidade.</td></tr>
+      <tr><td>Recusou</td><td>Registrar motivo (preço, timing, concorrente, não prioridade). Nutrição em 90 dias.</td></tr>
+    </tbody>
+  </table>
+  <h3>4.5 Objeções comuns <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th style="width:28%">Objeção</th><th>Resposta padrão (sem mexer no preço)</th></tr></thead>
+    <tbody>
+      <tr><td>"Está caro"</td><td>Voltar ao custo da dor em R$/mês. Se ainda pesa, oferecer o tier abaixo ou outra condição de pagamento do catálogo. Nunca desconto.</td></tr>
+      <tr><td>"Preciso pensar"</td><td>Perguntar o que falta para decidir e marcar data. Validade da proposta e fila de capacidade são reais.</td></tr>
+      <tr><td>"E se não der resultado?"</td><td>Mostrar premissas do ROI, o placar de resultado no portal e o primeiro resultado na primeira semana.</td></tr>
+      <tr><td>"Pode incluir X?"</td><td>X está no tier acima ou vira aditivo. Escopo verbal não existe.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 5 CHECKLIST POS FECHAMENTO -->
+<div class="section">
+  <div class="kicker">Seção 5</div>
+  <h2>Checklist pós-fechamento D0 a D+30</h2>
+  <p class="lede">O que fazer, dia a dia, a partir do aceite. Considera início imediato; se o projeto entrou na fila, conte D0 a partir da data de início. Pendências do cliente vencidas pausam o relógio e empurram as datas.</p>
+
+  <div class="day"><div class="d">D0<span>Dia do aceite</span></div><ul class="check">
+    <li>Conferir no Logs: contrato gerado, tier e valores corretos, projeto criado com esqueleto S0–S4+.</li>
+    <li>Conferir capacidade: início imediato ou fila com data. Comunicar a data ao cliente por escrito.</li>
+    <li>Emitir a 1ª cobrança (implementação ou entrada) com vencimento em até 3 dias.</li>
+    <li>Enviar mensagem de boas-vindas (modelo 17.1) com link do portal e próximos passos.</li>
+    <li>Criar o grupo de WhatsApp do projeto e explicar o horário de atendimento.</li>
+    <li>Enviar o checklist de onboarding: dados e acessos com prazo D+3 após o kickoff.</li>
+    <li>Agendar o kickoff (60 min) para até D+3, com o decisor e o operador presentes.</li>
+    <li>Criar a pasta do cliente e a entrada no cofre de senhas.</li>
+  </ul></div>
+  <div class="day"><div class="d">D1–D2<span>Pré-kickoff</span></div><ul class="check">
+    <li>Confirmar pagamento (conferência humana) e registrar <span class="mono">charge.paid</span>.</li>
+    <li>Sem pagamento em D+3: lembrete educado. S1 não começa sem ele.</li>
+    <li>Preparar o kickoff: mapa das dores, módulos contratados, cronograma das semanas, lista de acessos.</li>
+    <li>Definir o primeiro resultado da primeira semana (seção 7) e escrever no portal.</li>
+  </ul></div>
+  <div class="day"><div class="d">D3<span>Kickoff · início S1</span></div><ul class="check">
+    <li>Kickoff: objetivos, métricas da proposta (viram metas), cronograma, regras do relógio pausado, canais.</li>
+    <li>Mostrar o portal ao vivo: linha do tempo, pendências, como acompanhar.</li>
+    <li>Coletar na call o que for possível: acessos, exemplos de conversas, FAQ, tabela de preços do cliente.</li>
+    <li>Marcar as duas reuniões semanais de treinamento de S1 a S3 na agenda dos dois lados.</li>
+    <li>S0 fecha: pagamento confirmado + kickoff feito.</li>
+  </ul></div>
+  <div class="day"><div class="d">D4–D6<span>S1 · dados</span></div><ul class="check">
+    <li>Validar cada acesso recebido (Calendar, Meta, CRM, WhatsApp). Pendência vencida pausa o relógio.</li>
+    <li>Iniciar em paralelo integrações lentas (ex.: aprovação da Meta). Nunca esperar por elas.</li>
+    <li>Modelar os dados e escrever a estratégia de execução dos agentes.</li>
+    <li>Construir a Fase 0: primeiro fluxo com dado histórico ou entrada manual.</li>
+  </ul></div>
+  <div class="day"><div class="d">D7<span>Primeiro resultado</span></div><ul class="check">
+    <li>Entregar o primeiro resultado visível (seção 7) e registrar no portal.</li>
+    <li>Cliente aprova a estratégia de execução: critério de pronto da S1.</li>
+    <li>Fechar S1 no Logs (<span class="mono">sprint.closed</span>).</li>
+  </ul></div>
+  <div class="day"><div class="d">D8–D14<span>S2 · construção</span></div><ul class="check">
+    <li>Desenvolver e treinar os agentes; integrar o MLP ao CRM ou ferramenta do cliente.</li>
+    <li>Rodar o roteiro de testes (seção 8) com dado real em ambiente de teste.</li>
+    <li>Cliente testa e dá feedback nas reuniões de treinamento.</li>
+    <li>Fechar S2: fluxo principal rodando com dado real em teste.</li>
+  </ul></div>
+  <div class="day"><div class="d">D15–D21<span>S3 · entrega</span></div><ul class="check">
+    <li>Ajustes finais, go-live em produção com monitoramento ativo nas primeiras 48h.</li>
+    <li>Treinamento de uso gravado e publicado no portal.</li>
+    <li>Checklist de escopo 100% e aceite formal do cliente por escrito.</li>
+    <li>Primeira cobrança de mensalidade programada.</li>
+  </ul></div>
+  <div class="day"><div class="d">D22–D30<span>S4+ · primeiro ciclo</span></div><ul class="check">
+    <li>Primeiro relatório de resultado vs projeção publicado no portal.</li>
+    <li>Reunião de resultado de 30 min: apresentar o placar.</li>
+    <li>Com resultado positivo: pedir depoimento e apresentar o link de indicação.</li>
+    <li>Revisar custos de API do cliente e margem real do primeiro mês.</li>
+    <li>Registrar no Logs a saúde inicial da conta e a próxima oportunidade de upgrade.</li>
+  </ul></div>
+</div>
+
+<!-- 6 ENTREGA -->
+<div class="section">
+  <div class="kicker">Seção 6</div>
+  <h2>Padrão de entrega S0 a S4+</h2>
+  <p class="lede">Toda implementação segue a mesma sequência. Cada semana só fecha quando bate seu critério de pronto. O Logs cria esse esqueleto automaticamente no aceite.</p>
+  <table>
+    <thead><tr><th style="width:13%">Etapa</th><th style="width:16%">Objetivo</th><th>Entregas padrão</th><th style="width:21%">Critério de pronto</th><th style="width:15%">Depende do cliente</th></tr></thead>
+    <tbody>
+      <tr><td>S0 · Pré-kickoff</td><td>Contrato e terreno prontos</td><td>Contrato assinado, 1ª cobrança paga, checklist de onboarding enviado, kickoff agendado</td><td>Pagamento confirmado e kickoff marcado</td><td>Assinar e pagar</td></tr>
+      <tr><td>S1 · Onboarding de dados</td><td>Preparar o terreno</td><td>Dados coletados, acessos e APIs configurados, banco modelado, estratégia dos agentes, primeiro resultado</td><td>Acessos validados e estratégia aprovada</td><td>Dados e acessos até D+3</td></tr>
+      <tr><td>S2 · Construção</td><td>Agentes e sistema funcionando</td><td>Agentes desenvolvidos e treinados, MLP integrado ao CRM</td><td>Fluxo principal rodando com dado real em teste</td><td>Testar e dar feedback</td></tr>
+      <tr><td>S3 · Entrega</td><td>Escopo completo em produção</td><td>Ajustes finais, produção, treinamento de uso</td><td>Escopo 100% e aceite formal</td><td>Aceite</td></tr>
+      <tr><td>S4+ · Otimização</td><td>Melhorar resultado</td><td>Ciclos semanais ou quinzenais, relatório resultado vs projeção</td><td>Relatório do ciclo publicado</td><td>Usar o sistema</td></tr>
+    </tbody>
+  </table>
+  <h3>Regras da entrega <span class="tag prd">PRD</span></h3>
+  <ul>
+    <li><strong>Relógio pausado:</strong> pendência do cliente vencida congela o prazo; o portal mostra a pausa e o motivo. Cláusula obrigatória no contrato.</li>
+    <li><strong>Integrações lentas não travam o resto:</strong> o que depende de aprovação externa roda em paralelo; o resto usa dado histórico ou entrada manual (Fase 0).</li>
+    <li><strong>Sem sprint sem pagamento:</strong> S1 só começa com a primeira cobrança paga.</li>
+    <li><strong>Capacidade:</strong> no máximo 2 projetos em S0–S3 ao mesmo tempo.</li>
+  </ul>
+  <h3>Definição de pronto de cada entrega <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th style="width:26%">Entrega</th><th>Só está pronta quando</th></tr></thead>
+    <tbody>
+      <tr><td>Acesso configurado</td><td>Testado com uma chamada real e registrado no cofre de senhas.</td></tr>
+      <tr><td>Agente</td><td>Passou no roteiro de testes, tem handoff humano funcionando e custo por conversa medido.</td></tr>
+      <tr><td>Integração</td><td>Dado de ida e volta conferido com o cliente; erro gera alerta.</td></tr>
+      <tr><td>Treinamento</td><td>Gravado, publicado no portal e com resumo de 5 linhas.</td></tr>
+      <tr><td>Relatório de ciclo</td><td>Compara resultado com a projeção da proposta, com premissas e próximas ações.</td></tr>
+    </tbody>
+  </table>
+  <h3>Quando o projeto atrasa</h3>
+  <ul>
+    <li>Atraso por pendência do cliente: relógio pausa sozinho. Lembrar o cliente em D+1 e D+3 do vencimento (modelo 17.3).</li>
+    <li>Atraso da Sabre: avisar o cliente antes do prazo, com nova data e motivo. Nunca deixar o cliente descobrir.</li>
+    <li>Pausa acima de 14 dias: reunião de alinhamento. Acima de 30 dias: projeto volta para a fila e libera capacidade. <span class="tag prop">Proposto</span></li>
+  </ul>
+</div>
+
+<!-- 7 FIRST SUCCESS -->
+<div class="section cont">
+  <div class="kicker">Seção 7</div>
+  <h2>Primeiro resultado na primeira semana</h2>
+  <p class="lede">A entrega do mês 1 é o que gera indicação, o maior multiplicador de receita da Sabre. Por isso o cliente precisa ver valor real antes de terminar a primeira semana de projeto, e não só no go-live.</p>
+  <div class="box accent"><h4>Regra <span class="tag prop">Proposto</span></h4>
+  <p>Todo projeto tem um <strong>primeiro resultado</strong> definido até o kickoff e entregue até o fim da S1 (D+7 do kickoff). Ele é escrito no portal como meta e marcado como concluído quando entregue.</p></div>
+  <h3>Como escolher o primeiro resultado</h3>
+  <ul>
+    <li>Ligado à dor de maior custo em R$/mês da proposta.</li>
+    <li>Visível para o decisor sem explicação técnica.</li>
+    <li>Possível com dado histórico ou entrada manual (Fase 0), sem depender de aprovação externa.</li>
+    <li>Pequeno o bastante para caber em 3 dias de trabalho.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <table>
+    <thead><tr><th style="width:32%">Dor principal</th><th>Primeiro resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Leads sem resposta rápida</td><td>Agente respondendo em ambiente de teste com perguntas reais dos últimos 30 dias; o decisor conversa com ele no kickoff+4.</td></tr>
+      <tr><td>Follow-up esquecido</td><td>Lista de leads parados dos últimos 90 dias recuperada da conversa histórica, com valor estimado no pipeline.</td></tr>
+      <tr><td>Agenda desorganizada</td><td>Agendamento automático funcionando no Calendar para um tipo de horário.</td></tr>
+      <tr><td>Gestão sem número</td><td>Primeiro painel com os indicadores do mês anterior a partir da planilha do cliente.</td></tr>
+    </tbody>
+  </table>
+  <h3>Outros marcos de valor</h3>
+  <table>
+    <thead><tr><th>Marco</th><th class="num">Quando</th><th>Para quê</th></tr></thead>
+    <tbody>
+      <tr><td>Primeiro resultado</td><td class="num">Fim S1</td><td>Confirmar a decisão de compra</td></tr>
+      <tr><td>Primeiro lead atendido em produção</td><td class="num">S3</td><td>Valor real no dia a dia</td></tr>
+      <tr><td>Primeiro relatório de resultado vs projeção</td><td class="num">D+30</td><td>Base para depoimento e indicação</td></tr>
+      <tr><td>Projeção da proposta batida</td><td class="num">Mês 2–3</td><td>Momento de upgrade</td></tr>
+    </tbody>
+  </table>
+  <div class="box"><h4>Recompensa por velocidade <span class="tag prd">PRD</span></h4><p class="small">Cliente que entrega dados e acessos em até 48h entra no ritmo mais rápido de entrega, visível no portal. É o incentivo para o primeiro resultado sair no prazo.</p></div>
+</div>
+
+<!-- 8 AGENTES -->
+<div class="section">
+  <div class="kicker">Seção 8</div>
+  <h2>Construção de agentes</h2>
+  <p class="lede">Padrão técnico para todo agente que a Sabre coloca em produção. O objetivo é que dois agentes da Sabre se comportem com a mesma qualidade, independente de cliente.</p>
+  <h3>8.1 Ciclo de construção <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th style="width:4%">#</th><th style="width:20%">Fase</th><th>O que fazer</th><th style="width:20%">Saída</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Especificação</td><td>Objetivo do agente, público, canal, o que pode e não pode fazer, quando passa para humano, tom de voz.</td><td>Ficha do agente</td></tr>
+      <tr><td>2</td><td>Base de conhecimento</td><td>FAQ, preços do cliente, políticas, exemplos de conversas reais. Conferido pelo cliente.</td><td>Base versionada</td></tr>
+      <tr><td>3</td><td>Fluxos e ferramentas</td><td>Ações do agente: agendar, registrar no CRM, qualificar, enviar material.</td><td>Mapa de fluxos</td></tr>
+      <tr><td>4</td><td>Prompt e configuração</td><td>Instruções, limites, formato de saída, regras de segurança.</td><td>Versão 1 do prompt</td></tr>
+      <tr><td>5</td><td>Testes</td><td>Roteiro com no mínimo 30 casos reais: perguntas comuns, fora do escopo, tentativas de abuso, dados sensíveis.</td><td>Relatório de testes</td></tr>
+      <tr><td>6</td><td>Homologação</td><td>Cliente conversa com o agente nas reuniões de treinamento e aprova.</td><td>Aceite do agente</td></tr>
+      <tr><td>7</td><td>Go-live</td><td>Produção com monitoramento diário nas primeiras 48h, depois semanal.</td><td>Agente ativo</td></tr>
+      <tr><td>8</td><td>Otimização</td><td>Revisão de conversas, ajustes e nova versão a cada ciclo de S4+.</td><td>Changelog</td></tr>
+    </tbody>
+  </table>
+  <h3>8.2 Requisitos mínimos de todo agente</h3>
+  <div class="grid2">
+    <div class="box"><h4>Comportamento</h4><ul class="small">
+      <li>Nunca inventa preço, prazo ou política que não esteja na base.</li>
+      <li>Passa para humano quando não sabe, quando o cliente pede ou em reclamação.</li>
+      <li>Se identifica como assistente automatizado quando perguntado.</li>
+      <li>Não pede nem armazena dado sensível fora do necessário.</li>
+    </ul></div>
+    <div class="box"><h4>Operação</h4><ul class="small">
+      <li>Toda conversa registrada e consultável.</li>
+      <li>Alerta quando falha integração ou o agente para de responder.</li>
+      <li>Custo de API por conversa medido e lançado no custo do cliente.</li>
+      <li>Prompt e base com versão e changelog.</li>
+    </ul></div>
+  </div>
+  <h3>8.3 Métricas acompanhadas por agente</h3>
+  <table>
+    <thead><tr><th>Métrica</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td>Leads atendidos</td><td>Placar do portal, comparado à projeção</td></tr>
+      <tr><td>Tempo médio de primeira resposta</td><td>Prova de valor contra a situação anterior</td></tr>
+      <tr><td>Taxa de handoff para humano</td><td>Indica lacunas na base de conhecimento</td></tr>
+      <tr><td>Agendamentos ou conversões geradas</td><td>R$ no pipeline, base do ROI</td></tr>
+      <tr><td>Horas economizadas</td><td>Placar do portal</td></tr>
+      <tr><td>Custo de API por mês</td><td>Margem por cliente</td></tr>
+    </tbody>
+  </table>
+  <h3>8.4 Segurança e LGPD</h3>
+  <ul>
+    <li>Credenciais só em cofre de senhas e variáveis de ambiente, nunca em código ou conversa.</li>
+    <li>Ambientes separados por cliente; nenhum dado de um cliente usado para treinar ou testar outro.</li>
+    <li>No fim do contrato, acessos revogados e dados devolvidos ou apagados conforme contrato (seção 16).</li>
+  </ul>
+</div>
+
+<!-- 9 CADÊNCIA -->
+<div class="section">
+  <div class="kicker">Seção 9</div>
+  <h2>Cadência de reuniões e comunicação</h2>
+  <p class="lede">Ritmo previsível é parte do produto. O cliente sabe quando vai falar com a Sabre e onde encontrar cada informação.</p>
+  <h3>Reuniões com o cliente</h3>
+  <table>
+    <thead><tr><th style="width:22%">Reunião</th><th style="width:16%">Quando</th><th class="num" style="width:9%">Duração</th><th>Pauta fixa</th></tr></thead>
+    <tbody>
+      <tr><td>Kickoff</td><td>S0 · até D+3</td><td class="num">60 min</td><td>Objetivos, metas, cronograma, primeiro resultado, regras do relógio, canais</td></tr>
+      <tr><td>Treinamento <span class="tag prd">PRD</span></td><td>2× por semana, S1 a S3</td><td class="num">45 min</td><td>Demonstração do que foi construído, teste com o cliente, feedback, pendências</td></tr>
+      <tr><td>Aceite</td><td>Fim S3</td><td class="num">45 min</td><td>Checklist de escopo, treinamento de uso, aceite formal</td></tr>
+      <tr><td>Otimização <span class="tag prd">PRD</span></td><td>S4+ · semanal ou quinzenal</td><td class="num">30 min</td><td>Placar, ajustes feitos, próximas ações</td></tr>
+      <tr><td>Revisão de resultado <span class="tag prop">Proposto</span></td><td>Mensal</td><td class="num">30 min</td><td>Resultado vs projeção, saúde da conta, oportunidade de upgrade</td></tr>
+      <tr><td>Revisão estratégica <span class="tag prop">Proposto</span></td><td>Trimestral</td><td class="num">60 min</td><td>Próximos módulos, renovação, indicação</td></tr>
+    </tbody>
+  </table>
+  <h3>Canais e prazos de resposta</h3>
+  <table>
+    <thead><tr><th style="width:20%">Canal</th><th>Uso</th><th style="width:28%">Prazo de resposta</th></tr></thead>
+    <tbody>
+      <tr><td>Portal (Logs)</td><td>Progresso, pendências, treinamentos, relatórios, combinados formais</td><td>Atualizado a cada entrega</td></tr>
+      <tr><td>WhatsApp do projeto</td><td>Consultoria e dúvidas rápidas</td><td>Horário definido <span class="tag aberto">Em aberto</span>. Sugestão: dias úteis 9h–18h, até 4h úteis</td></tr>
+      <tr><td>E-mail</td><td>Contrato, aceite, cobrança</td><td>Até 1 dia útil</td></tr>
+      <tr><td>Incidente em produção</td><td>Agente parado ou integração quebrada</td><td>Reconhecer em até 2h úteis; correção priorizada <span class="tag prop">Proposto</span></td></tr>
+    </tbody>
+  </table>
+  <h3>Comunicação proativa</h3>
+  <ul>
+    <li>Toda sexta, mensagem de status da semana: o que foi feito, o que vem, pendências do cliente. <span class="tag prop">Proposto</span></li>
+    <li>Treinamentos recorrentes ficam gravados no portal. <span class="tag prd">PRD</span></li>
+    <li>Toda pausa do relógio é comunicada com o motivo no mesmo dia.</li>
+  </ul>
+</div>
+
+<!-- 10 PENDÊNCIAS / MUDANÇAS -->
+<div class="section">
+  <div class="kicker">Seção 10</div>
+  <h2>Pendências, relógio e mudanças de escopo</h2>
+  <h3>Pendências do cliente</h3>
+  <ul>
+    <li>Toda dependência do cliente vira pendência no portal, com dono, prazo e status. Ex.: acesso ao Calendar, Meta Business, CRM, WhatsApp, FAQ, tabela de preços.</li>
+    <li>Prazo padrão de dados e acessos: D+3 do kickoff. <span class="tag prd">PRD</span></li>
+    <li>Pendência vencida pausa o relógio automaticamente e aparece para os dois lados. <span class="tag prd">PRD</span></li>
+    <li>Lembretes: no dia do vencimento, D+1 e D+3. A partir de D+7, reunião de alinhamento. <span class="tag prop">Proposto</span></li>
+  </ul>
+  <h3>Pedido de mudança</h3>
+  <p>Tudo o que o cliente pede fora do escopo aceito é registrado no Logs como pedido de mudança, no mesmo dia, e classificado:</p>
+  <table>
+    <thead><tr><th style="width:22%">Classificação</th><th>Critério</th><th style="width:30%">Próximo passo</th></tr></thead>
+    <tbody>
+      <tr><td>Incluído no retainer</td><td>Ajuste do que já existe, dentro da lista de incluídos (seção 3)</td><td>Entra no próximo ciclo de otimização</td></tr>
+      <tr><td>Aditivo</td><td>Algo novo: agente, canal, integração, módulo</td><td>Proposta de aditivo pelo catálogo; só começa depois de aceita e paga</td></tr>
+      <tr><td>Upgrade</td><td>Módulo que já está no tier acima</td><td>Upgrade de tier pelo portal</td></tr>
+    </tbody>
+  </table>
+  <div class="box risk"><h4>Sinal de alerta</h4><p class="small">"É rapidinho" é o pedido que mais destrói margem. Todo pedido passa pela classificação, mesmo que a resposta seja "incluído". O registro é o que permite mostrar ao cliente, na renovação, tudo o que foi entregue.</p></div>
+</div>
+
+<!-- 11 PÓS-ENTREGA -->
+<div class="section">
+  <div class="kicker">Seção 11</div>
+  <h2>Pós-entrega, expansão e indicação</h2>
+  <p class="lede">Depois da entrega, upgrade e indicação reabrem o ciclo. É aqui que o MRR cresce sem custo de aquisição.</p>
+  <h3>11.1 Saúde da conta</h3>
+  <table>
+    <thead><tr><th style="width:24%">Sinal</th><th>Verde</th><th>Amarelo</th><th>Vermelho</th></tr></thead>
+    <tbody>
+      <tr><td>Uso do sistema</td><td>Uso semanal estável</td><td>Queda acima de 30%</td><td>Sem uso por 14 dias</td></tr>
+      <tr><td>Resultado vs projeção</td><td>≥ 80% da projeção</td><td>50–80%</td><td>&lt; 50%</td></tr>
+      <tr><td>Pagamentos</td><td>Em dia</td><td>Atraso até 7 dias</td><td>Atraso &gt; 15 dias</td></tr>
+      <tr><td>Engajamento</td><td>Vai às reuniões</td><td>Faltou a 1</td><td>Faltou a 2 seguidas</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Faixas propostas para o health score do Logs (roadmap fase 8). Ajustar com dados reais. <span class="tag prop">Proposto</span></p>
+  <h3>11.2 Gatilhos de ação</h3>
+  <table>
+    <thead><tr><th style="width:36%">Gatilho</th><th>Ação</th></tr></thead>
+    <tbody>
+      <tr><td>Qualquer sinal vermelho</td><td>Ligar para o decisor em até 2 dias úteis e montar plano de recuperação.</td></tr>
+      <tr><td>Resultado acima da projeção por 2 ciclos</td><td>Momento de upsell: mostrar a task bloqueada de maior ganho.</td></tr>
+      <tr><td>Primeiro relatório positivo</td><td>Pedir depoimento e apresentar o link de indicação.</td></tr>
+      <tr><td>60 dias antes do fim da vigência</td><td>Revisão estratégica e proposta de renovação.</td></tr>
+    </tbody>
+  </table>
+  <h3>11.3 Recompensas por acesso e status <span class="tag prd">PRD</span></h3>
+  <table>
+    <thead><tr><th>Ação do cliente</th><th>Recompensa</th></tr></thead>
+    <tbody>
+      <tr><td>Indicação que fecha contrato</td><td>Módulo real liberado antes da hora ou sessão estratégica extra com Leoni</td></tr>
+      <tr><td>Depoimento ou case publicado</td><td>Destaque como Cliente Fundador no site da Sabre</td></tr>
+      <tr><td>Upgrade de tier</td><td>Prioridade na fila da próxima sprint</td></tr>
+      <tr><td>Dados e acessos entregues em até 48h</td><td>Ritmo mais rápido de entrega, visível no portal</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Nada de pontos, medalhas, moedas, créditos ou descontos.</p>
+  <h3>11.4 Processo de indicação</h3>
+  <ol>
+    <li>Cliente recebe link próprio de indicação no portal após o primeiro relatório positivo.</li>
+    <li>Indicado entra no pipeline com origem "indicação" e vai direto para conexão.</li>
+    <li>Cliente acompanha o status no portal.</li>
+    <li>Indicado fechou: recompensa entregue em até 30 dias e registrada (<span class="mono">referral.won</span>).</li>
+  </ol>
+</div>
+
+<!-- 12 FINANCEIRO -->
+<div class="section cont">
+  <div class="kicker">Seção 12</div>
+  <h2>Financeiro e cobrança</h2>
+  <p class="lede">Primeiro controle, depois automação. Fase A no Logs com registro manual; Fase B com Asaas, cobrança e baixa automática por webhook.</p>
+  <h3>Rotina financeira</h3>
+  <table>
+    <thead><tr><th style="width:18%">Quando</th><th>O que fazer</th></tr></thead>
+    <tbody>
+      <tr><td>A cada pagamento</td><td>Conferir no extrato (conferência humana) e registrar no Logs.</td></tr>
+      <tr><td>Semanal</td><td>Revisar cobranças vencendo nos próximos 7 dias e atrasadas.</td></tr>
+      <tr><td>Mensal · dia 1</td><td>Fechar o mês: MRR, inadimplência, custos de API e infra por cliente, margem por cliente.</td></tr>
+      <tr><td>Mensal · dia 5</td><td>Alocação nos baldes do Sabre Financial OS.</td></tr>
+      <tr><td>Trimestral</td><td>Revisão de preço do catálogo e da meta de MRR.</td></tr>
+    </tbody>
+  </table>
+  <h3>Régua de cobrança <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th class="num" style="width:14%">Dia</th><th>Ação</th></tr></thead>
+    <tbody>
+      <tr><td class="num">D-3</td><td>Lembrete com link de pagamento</td></tr>
+      <tr><td class="num">D0</td><td>Aviso de vencimento</td></tr>
+      <tr><td class="num">D+3</td><td>Mensagem educada com link</td></tr>
+      <tr><td class="num">D+7</td><td>Contato direto com o decisor; conta fica amarela na saúde</td></tr>
+      <tr><td class="num">D+15</td><td>Aviso formal: otimizações em S4+ pausadas até regularizar</td></tr>
+      <tr><td class="num">D+30</td><td>Suspensão conforme contrato e conversa de encerramento</td></tr>
+    </tbody>
+  </table>
+  <h3>Modelo de contrato</h3>
+  <ul>
+    <li>Precisa suportar o caso Plena: implementação com entrada e parcelas embutidas na mensalidade, vigência mínima de 6 meses. <span class="tag prd">PRD</span></li>
+    <li>Cláusulas obrigatórias: escopo do tier, escopo do retainer, relógio pausado, pedido de mudança, vigência, condição de pagamento, cancelamento, LGPD. <span class="tag aberto">Redação em aberto</span></li>
+  </ul>
+  <h3>Custos por cliente</h3>
+  <p>Todo custo variável (API, infraestrutura, WhatsApp) é atribuído a uma conta. Margem por cliente = mensalidade − custos variáveis − horas de S4+ × custo-hora. Cliente com margem negativa por 2 meses entra em revisão de preço ou de escopo.</p>
+</div>
+
+<!-- 13 MRR -->
+<div class="section">
+  <div class="kicker">Seção 13</div>
+  <h2>Estratégia de crescimento do MRR</h2>
+  <p class="lede">Resumo do Modelo de Escala em 3, 6 e 12 meses, em três cenários. Os números recalculam a partir da aba Premissas da planilha; aqui está o que eles significam para a operação.</p>
+  <div class="grid3">
+    <div class="stat"><div class="l">MRR mês 12 · cenário 10</div><div class="v">R$ 10.437</div><div class="l">11,5 clientes · margem 27%</div></div>
+    <div class="stat"><div class="l">MRR mês 12 · cenário 20</div><div class="v">R$ 20.252</div><div class="l">21,2 clientes · margem 38%</div></div>
+    <div class="stat"><div class="l">MRR mês 12 · cenário 30</div><div class="v">R$ 30.067</div><div class="l">30,9 clientes · margem 52%</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Indicador</th><th class="num">10 clientes</th><th class="num">20 clientes</th><th class="num">30 clientes</th></tr></thead>
+    <tbody>
+      <tr><td>Clientes no mês 3</td><td class="num">5,5</td><td class="num">8,4</td><td class="num">11,3</td></tr>
+      <tr><td>Clientes no mês 6</td><td class="num">7,8</td><td class="num">13,2</td><td class="num">18,6</td></tr>
+      <tr><td>Clientes no mês 12</td><td class="num">11,5</td><td class="num">21,2</td><td class="num">30,9</td></tr>
+      <tr><td>MRR no mês 3</td><td class="num">R$ 2.514</td><td class="num">R$ 4.277</td><td class="num">R$ 6.040</td></tr>
+      <tr><td>MRR no mês 6</td><td class="num">R$ 4.711</td><td class="num">R$ 8.716</td><td class="num">R$ 12.722</td></tr>
+      <tr><td>MRR no mês 12</td><td class="num">R$ 10.437</td><td class="num">R$ 20.252</td><td class="num">R$ 30.067</td></tr>
+      <tr><td>Ticket médio MRR no mês 12</td><td class="num">R$ 906</td><td class="num">R$ 955</td><td class="num">R$ 974</td></tr>
+      <tr><td>Receita total em 12 meses</td><td class="num">R$ 83.565</td><td class="num">R$ 158.734</td><td class="num">R$ 233.903</td></tr>
+      <tr><td>Lucro no mês 12</td><td class="num">R$ 3.192</td><td class="num">R$ 8.876</td><td class="num">R$ 18.060</td></tr>
+      <tr><td>Margem no mês 12</td><td class="num">27%</td><td class="num">38%</td><td class="num">52%</td></tr>
+      <tr><td>Pior mês de lucro</td><td class="num">−R$ 884</td><td class="num">−R$ 722</td><td class="num">R$ 703</td></tr>
+      <tr><td>Lucro acumulado em 12 meses</td><td class="num">R$ 9.625</td><td class="num">R$ 49.139</td><td class="num">R$ 92.154</td></tr>
+      <tr><td>Contratados no mês 12</td><td class="num">1</td><td class="num">2</td><td class="num">2</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Fonte: Sabre · Modelo de Escala 3/6/12 meses, aba Resumo. Clientes fracionados são média esperada com churn. As premissas (churn, conversão, custos, preços) estão na aba Premissas, que não veio neste arquivo; os números acima valem enquanto elas valerem.</p>
+
+  <h3>O que o modelo ensina</h3>
+  <ul>
+    <li><strong>Escala melhora a margem.</strong> A margem sobe de 27% para 52% entre os cenários porque custos fixos e contratações se diluem. Crescer devagar demais é o cenário mais frágil.</li>
+    <li><strong>Os primeiros meses podem dar prejuízo.</strong> Nos cenários de 10 e 20 há mês negativo. Manter reserva de caixa de pelo menos 3× o pior mês antes de contratar. <span class="tag prop">Proposto</span></li>
+    <li><strong>MRR é recorrência, não implementação.</strong> O ticket médio de mensalidade fica perto de R$ 900–975. Cada cliente que fica 12 meses vale mais que a implementação; retenção é a principal alavanca.</li>
+    <li><strong>Capacidade trava o cenário 30.</strong> Ir de 0 para cerca de 31 clientes em 12 meses exige perto de 2,6 entradas líquidas por mês. Com 2 implementações em paralelo de 3 a 4 semanas, a Sabre sozinha entrega cerca de 2 por mês. Por isso o modelo prevê contratações.</li>
+  </ul>
+</div>
+
+<!-- 14 METAS -->
+<div class="section cont">
+  <div class="kicker">Seção 14</div>
+  <h2>Metas, funil reverso e capacidade</h2>
+  <p class="lede">A meta de calls não é chute: é calculada de trás para frente a partir da meta de MRR e das taxas reais de conversão.</p>
+  <h3>Fórmula <span class="tag prd">PRD</span></h3>
+  <div class="box"><p class="mono" style="margin:0">calls/dia = (novo MRR desejado ÷ ticket médio) ÷ (t_conexão × t_diagnóstico × t_proposta × t_fechamento × dias úteis)</p></div>
+  <h3>Exemplo com o cenário 20</h3>
+  <p>Chegar a R$ 20.252 de MRR em 12 meses pede cerca de R$ 1.690 de MRR novo por mês. Com ticket de R$ 955, são cerca de <strong>1,8 fechamentos por mês</strong>, já dentro do limite de 2 implementações em paralelo.</p>
+  <table>
+    <thead><tr><th>Etapa do funil</th><th class="num">Taxa ilustrativa</th><th class="num">Volume/mês</th></tr></thead>
+    <tbody>
+      <tr><td>Prospecções</td><td class="num">—</td><td class="num">50</td></tr>
+      <tr><td>Conexão (respondeu)</td><td class="num">30%</td><td class="num">15</td></tr>
+      <tr><td>Diagnóstico feito</td><td class="num">50%</td><td class="num">7,5</td></tr>
+      <tr><td>Proposta enviada</td><td class="num">60%</td><td class="num">4,5</td></tr>
+      <tr><td>Fechamento</td><td class="num">40%</td><td class="num">1,8</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Taxas ilustrativas, não medidas. Com elas, a meta seria cerca de 2,3 prospecções por dia útil. Substituir pelas taxas reais assim que houver 30 dias de registros no Logs. <span class="tag aberto">Em aberto</span></p>
+  <h3>Trava de capacidade <span class="tag prd">PRD</span></h3>
+  <p>Se a meta de fechamentos passar da capacidade de entrega, a alavanca é preço, não volume. Antes de aumentar prospecção além de 2 fechamentos por mês, decidir entre: subir preço do catálogo, reduzir horas por implementação (padronização), ou contratar.</p>
+  <h3>Metas de referência por trimestre <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th>Trimestre</th><th class="num">Clientes ativos</th><th class="num">MRR</th><th>Foco</th></tr></thead>
+    <tbody>
+      <tr><td>T1 (mês 3)</td><td class="num">8</td><td class="num">R$ 4.300</td><td>Processo comercial rodando, primeiras taxas reais</td></tr>
+      <tr><td>T2 (mês 6)</td><td class="num">13</td><td class="num">R$ 8.700</td><td>Primeiras indicações, padronização da entrega</td></tr>
+      <tr><td>T3 (mês 9)</td><td class="num">17</td><td class="num">R$ 14.000</td><td>Primeira contratação, upgrades</td></tr>
+      <tr><td>T4 (mês 12)</td><td class="num">21</td><td class="num">R$ 20.000</td><td>Segunda contratação, revisão de preço</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Baseado no cenário 20 da planilha; T3 interpolado.</p>
+  <h3>Gatilhos de contratação <span class="tag prop">Proposto</span></h3>
+  <ul>
+    <li>Fila de capacidade com espera acima de 3 semanas por 2 meses seguidos.</li>
+    <li>Horas comprometidas acima de 85% das horas disponíveis por 4 semanas.</li>
+    <li>Reserva de caixa cobre 3 meses do novo custo.</li>
+    <li>Primeira contratação sugerida: implementação de agentes, para liberar Leoni para venda e estratégia.</li>
+  </ul>
+</div>
+
+<!-- 15 ROTINA -->
+<div class="section cont">
+  <div class="kicker">Seção 15</div>
+  <h2>Rotina semanal da Sabre</h2>
+  <p class="lede">Agenda padrão para caber venda, entrega e gestão. Ajustar às horas reais disponíveis fora da faculdade <span class="tag aberto">Em aberto</span>.</p>
+  <h3>Todo dia (30 min)</h3>
+  <ul class="check">
+    <li>Abrir o Logs: pendências vencidas, relógios pausados, propostas visualizadas, cobranças.</li>
+    <li>Responder WhatsApp dos clientes dentro do prazo.</li>
+    <li>Prospecções do dia conforme o funil reverso.</li>
+    <li>Registrar calls e decisões do dia.</li>
+  </ul>
+  <h3>Semana padrão <span class="tag prop">Proposto</span></h3>
+  <table>
+    <thead><tr><th style="width:16%">Dia</th><th>Manhã</th><th>Tarde</th></tr></thead>
+    <tbody>
+      <tr><td>Segunda</td><td>Planejamento da semana, metas, capacidade</td><td>Construção (S1–S3)</td></tr>
+      <tr><td>Terça</td><td>Treinamentos com clientes em implementação</td><td>Calls de diagnóstico e vendas</td></tr>
+      <tr><td>Quarta</td><td>Construção</td><td>Otimização de clientes S4+</td></tr>
+      <tr><td>Quinta</td><td>Treinamentos com clientes em implementação</td><td>Calls de diagnóstico e vendas</td></tr>
+      <tr><td>Sexta</td><td>Relatórios S4+, status semanal aos clientes</td><td>Financeiro, conteúdo e prospecção</td></tr>
+    </tbody>
+  </table>
+  <h3>Revisões</h3>
+  <table>
+    <thead><tr><th style="width:18%">Frequência</th><th>O que revisar</th></tr></thead>
+    <tbody>
+      <tr><td>Semanal</td><td>Pipeline, taxas do funil, capacidade, pendências, saúde das contas</td></tr>
+      <tr><td>Mensal</td><td>MRR, inadimplência, margem por cliente, metas, custos de API</td></tr>
+      <tr><td>Trimestral</td><td>Catálogo e preços, ICP, este manual, plano de contratação</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 16 RISCOS -->
+<div class="section">
+  <div class="kicker">Seção 16</div>
+  <h2>Riscos, cancelamento e offboarding</h2>
+  <h3>Riscos e resposta padrão</h3>
+  <table>
+    <thead><tr><th style="width:28%">Risco</th><th>Prevenção</th><th>Resposta</th></tr></thead>
+    <tbody>
+      <tr><td>Escopo crescendo sem cobrança</td><td>Pedido de mudança obrigatório</td><td>Classificar e propor aditivo</td></tr>
+      <tr><td>Cliente não entrega acessos</td><td>Prazo D+3 e relógio pausado</td><td>Lembretes e reunião após 7 dias</td></tr>
+      <tr><td>Integração externa travada</td><td>Rodar em paralelo, Fase 0</td><td>Entregar sobre dado manual</td></tr>
+      <tr><td>Agente erra com cliente final</td><td>Testes, handoff humano</td><td>Corrigir, registrar, avisar o cliente</td></tr>
+      <tr><td>Custo de API acima do previsto</td><td>Medição mensal por cliente</td><td>Otimizar ou reajustar pelo catálogo</td></tr>
+      <tr><td>Sobrecarga de Leoni</td><td>Limite de 2 implementações</td><td>Fila e gatilho de contratação</td></tr>
+      <tr><td>Concentração de receita</td><td>Nenhum cliente acima de 30% do MRR <span class="tag prop">Proposto</span></td><td>Priorizar novas contas</td></tr>
+    </tbody>
+  </table>
+  <h3>Cancelamento</h3>
+  <ol>
+    <li>Pedido recebido: entender o motivo em conversa com o decisor.</li>
+    <li>Se o motivo for resultado, oferecer plano de recuperação de 30 dias antes de encerrar.</li>
+    <li>Aplicar as regras do contrato (vigência mínima, aviso prévio).</li>
+    <li>Registrar o motivo no Logs para revisão trimestral.</li>
+  </ol>
+  <h3>Offboarding</h3>
+  <ul class="check">
+    <li>Relatório final com tudo o que foi entregue e os resultados.</li>
+    <li>Exportar e entregar ao cliente as configurações e dados que são dele.</li>
+    <li>Desligar agentes e revogar todos os acessos da Sabre.</li>
+    <li>Apagar credenciais do cofre e dados conforme contrato e LGPD.</li>
+    <li>Encerrar cobranças e fazer a conferência final.</li>
+    <li>Pedir feedback e manter o contato em nutrição.</li>
+  </ul>
+</div>
+
+<!-- 17 MODELOS -->
+<div class="section">
+  <div class="kicker">Seção 17</div>
+  <h2>Modelos de mensagem</h2>
+  <p class="lede">Textos base para adaptar. O tom é direto, claro e sem jargão técnico.</p>
+  <h3>17.1 Boas-vindas (D0)</h3>
+  <div class="quote">Oi, [nome]! Seja bem-vindo à Sabre. A partir de agora tudo do seu projeto fica neste link: [portal]. Lá você acompanha cada semana, o que já está pronto e o que precisamos de você. Próximos passos: 1) pagamento da entrada até [data]; 2) kickoff em [data e hora]; 3) checklist de acessos, que já está no portal. Qualquer dúvida, é por aqui no horário de [horário].</div>
+  <h3>17.2 Convite para o kickoff</h3>
+  <div class="quote">[Nome], confirmando nosso kickoff em [data], [hora], com duração de 1h. Peço que estejam você e [operador]. Vamos alinhar metas, cronograma e o primeiro resultado que você vai ver até [data]. Se puder, traga os acessos da lista no portal.</div>
+  <h3>17.3 Pendência vencida</h3>
+  <div class="quote">[Nome], a pendência "[pendência]" venceu em [data]. Por isso o prazo do projeto ficou pausado, como combinamos no contrato. Assim que recebermos, retomamos no mesmo dia. Precisa de ajuda para encontrar esse acesso?</div>
+  <h3>17.4 Status de sexta</h3>
+  <div class="quote">Resumo da semana do projeto [nome]: feito: [itens]. Próxima semana: [itens]. Precisamos de você: [pendências e prazos]. Tudo atualizado no portal.</div>
+  <h3>17.5 Pedido de mudança</h3>
+  <div class="quote">Boa ideia, [nome]. Registrei como pedido de mudança. Ela [está incluída no seu plano e entra no próximo ciclo] / [é um item novo; te mando a proposta do aditivo até amanhã].</div>
+  <h3>17.6 Pedido de indicação</h3>
+  <div class="quote">[Nome], que bom ver [resultado] no placar deste mês. Se você conhece alguém com o mesmo desafio, seu link de indicação está no portal. Indicação que fecha libera para você [recompensa].</div>
+</div>
+
+<!-- 18 ABERTO -->
+<div class="section">
+  <div class="kicker">Seção 18</div>
+  <h2>Decisões em aberto</h2>
+  <p class="lede">Itens que este manual usa com valor provisório. Cada decisão tomada atualiza a seção correspondente.</p>
+  <table>
+    <thead><tr><th style="width:44%">Decisão</th><th style="width:16%">Seção</th><th>Valor provisório usado</th></tr></thead>
+    <tbody>
+      <tr><td>Catálogo: módulos, preços e composição dos 3 tiers</td><td>3</td><td>Placeholder no Logs</td></tr>
+      <tr><td>O que está incluído no retainer de S4+</td><td>3</td><td>Lista provisória da seção 3</td></tr>
+      <tr><td>Vigência mínima padrão</td><td>3, 12</td><td>6 meses (referência Plena)</td></tr>
+      <tr><td>Taxas de conversão reais do funil</td><td>14</td><td>Taxas ilustrativas</td></tr>
+      <tr><td>Horas por semana disponíveis para a Sabre</td><td>15</td><td>Semana padrão sugerida</td></tr>
+      <tr><td>Horário de resposta no WhatsApp</td><td>9</td><td>Dias úteis 9h–18h, até 4h</td></tr>
+      <tr><td>Redação da cláusula de relógio pausado e do contrato padrão</td><td>12</td><td>—</td></tr>
+      <tr><td>Técnicas de venda além de SPIN e BANT</td><td>4</td><td>Só SPIN e BANT</td></tr>
+      <tr><td>ICP formal</td><td>2</td><td>Critérios sugeridos</td></tr>
+      <tr><td>Migração dos clientes atuais (Plena e outros) para o Logs</td><td>—</td><td>Entram em S4+</td></tr>
+      <tr><td>Premissas do Modelo de Escala</td><td>13</td><td>Aba Premissas da planilha</td></tr>
+    </tbody>
+  </table>
+  <div class="box accent" style="margin-top:16pt"><h4>Manutenção deste manual</h4><p class="small">Revisão trimestral. Toda regra nova nasce de um caso real e entra com data. Regra que ninguém segue é removida ou vira automação no Logs.</p></div>
+</div>
+
+</body>
+</html>
